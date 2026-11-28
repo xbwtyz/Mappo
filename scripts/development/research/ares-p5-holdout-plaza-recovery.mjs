@@ -5,6 +5,7 @@ import {materializeLockedRtreCase} from './ares-rtre-locked-recipes.mjs';
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
 import {pairsFor,reformCoverTrial} from './ares-p4x-hybrid.mjs';
 import {projectCyclic} from './ares-p5-holdout-cyclic.mjs';
+import {reformRotationCoverGroups,rotationTriplets,projectRotation} from './ares-p5-holdout-rotation.mjs';
 import {angularLineProposals,localAngularLines} from './ares-p5-holdout-local-angular.mjs';
 import {constructP5CoordinatedCandidate} from './ares-p5-topology-observe.mjs';
 import {auditP5CoordinatedCandidate} from './ares-p5-topology-audit.mjs';
@@ -89,7 +90,9 @@ export async function diagnosePlazaRecovery(caseId){
 // Batch II pilot. All proposal generation, full evaluations and the one
 // construction share one root. The independent audit is a separate,
 // non-search replay under its previously qualified fixed bound.
-export async function searchCoordinatedPlazaRecovery(caseId){
+export async function searchCoordinatedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,false);}
+export async function searchDiversifiedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true);}
+async function coordinatedPlazaSearch(caseId,diversified){
  const prior=plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
  const base={caseId,source:prior.source,authority:'none',attempts:0,localProbes:0,minimum:null,best:null,construction:null,audit:null};
  const finish=(status,reason=null)=>riFreeze({...base,status,reason,stats:b.snapshot()});
@@ -99,16 +102,17 @@ export async function searchCoordinatedPlazaRecovery(caseId){
   const mandatory=x.mandatoryFor('plaza-attached'),clauses=[...mandatory.map(p=>p.movable),...x.rotation.map(r=>r.eligible)];
   const minimum=measureConnectedMinimum(clauses,x.adj,b);base.minimum=minimum;
   if(minimum.status!=='exact'||minimum.minimum>8)return finish('refused','necessary-cover-not-established');
-  const ids=minimum.witness;
+  let ids=minimum.witness;
   if(ids.some(id=>!writable.has(id))||!clauses.every(c=>c.some(id=>ids.includes(id))))throw Error('Invalid coordinated cover.');
-  const affected=new Set([...positions.keys(),...ids]);
-  for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
-  const affectedIds=sort(affected),point=n=>({x:n.x,y:n.y}),seen=new Set(),seenLocal=new Set();
+  const affectedFor=group=>{const affected=new Set([...positions.keys(),...group]);
+   for(const id of [...affected])for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}return sort(affected);};
+  let affectedIds=affectedFor(ids);
+  const point=n=>({x:n.x,y:n.y}),seen=new Set(),seenLocal=new Set();
   const scope=points=>ids.every(id=>{b.spend(4+city.survey.boundary.length);const old=g.nodesById.get(id),p=points.get(id);return p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&Math.abs(p.x)<=100000&&Math.abs(p.y)<=100000&&Math.hypot(p.x-old.x,p.y-old.y)<=limit&&(p.x!==old.x||p.y!==old.y)&&insideOrOn(p,city.survey.boundary);});
   const rotation=pos=>affectedIds.filter(id=>{b.spend();return !samePlazaRecoveryOrder(orders.get(id),plazaRecoveryOrder(g,id,pos,b));});
   const full=points=>{
    if(base.attempts>=47||base.attempts+base.localProbes>=255)return null;
-   const key=JSON.stringify(ids.map(id=>points.get(id)));b.spend(1+ids.length);if(seen.has(key))return null;seen.add(key);b.expand();base.attempts++;
+   const key=JSON.stringify(ids.map(id=>[id,points.get(id)]));b.spend(1+ids.length);if(seen.has(key))return null;seen.add(key);b.expand();base.attempts++;
    if(!scope(points))return null;
    const pos=new Map([...positions,...points]),changed=rotation(pos);
    // Evaluate the exact graph even if angular constraints remain, so
@@ -141,7 +145,7 @@ export async function searchCoordinatedPlazaRecovery(caseId){
     if(count>=quota||base.localProbes>=192||base.attempts+base.localProbes>=255)break;
     const step=stream.it.next();if(step.done)continue;active=true;count++;base.localProbes++;b.expand();
     const points=new Map(item.points);points.set(stream.variable,step.value);
-    const key=JSON.stringify(ids.map(id=>points.get(id)));b.spend(1+ids.length);if(seenLocal.has(key)||!scope(points))continue;seenLocal.add(key);
+    const key=JSON.stringify(ids.map(id=>[id,points.get(id)]));b.spend(1+ids.length);if(seenLocal.has(key)||!scope(points))continue;seenLocal.add(key);
     const pos=new Map([...positions,...points]),now=id=>pos.get(id)??g.nodesById.get(id);
     let residual=0;for(const p of item.feedback){const [a,c]=p.ids.map(id=>g.roadsById.get(id));b.spend(16);if(classifyP5Contact(now(a.a),now(a.b),now(c.a),now(c.b)).kind!=='none')residual++;}
     ranked.push({points,score:rotation(pos).length*100000+residual*1000});
@@ -153,12 +157,56 @@ export async function searchCoordinatedPlazaRecovery(caseId){
   if(!ids.length)take(full(new Map()));
   // Reserve work for the one construction; this is a conservative
   // scheduling reserve, not an increased ceiling or guaranteed fit.
-  for(let round=0;ids.length&&!ready&&round<12&&base.attempts<47&&b.snapshot().remainingWork>2500000;round++){
+  for(let round=0;!diversified&&ids.length&&!ready&&round<12&&base.attempts<47&&b.snapshot().remainingWork>2500000;round++){
    const points=reformCoverTrial(g,positions,ids,best?.feedback.length?best.feedback:mandatory,offset,round,b,round%3&&best?best.points:null,8);
    projectCyclic(g,positions,points,affectedIds,orders,offset,round,b);take(full(points));
    if(!ready&&best&&round%2===1&&b.snapshot().remainingWork>2500000){
     for(const p of local(best,Math.min(48,192-base.localProbes))){if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;take(full(p.points));}
    }
+  }
+  if(diversified&&ids.length&&!ready){
+   // Enumerate bounded alternatives only in the existing admitted graph.
+   // Select the smallest first, then diverse alternatives by differing IDs.
+   const first=[...ids],cover=reformRotationCoverGroups(clauses,x.adj,b,8);
+   const pool=cover.groups.filter(group=>JSON.stringify(group)!==JSON.stringify(first));
+   const groups=[first];
+   while(pool.length&&groups.length<6){
+    const diversity=group=>Math.min(...groups.map(g=>group.filter(id=>!g.includes(id)).length+g.filter(id=>!group.includes(id)).length));
+    pool.sort((a,c)=>{b.spend(1+a.length+c.length);return a.length-c.length||diversity(c)-diversity(a)||riCompare(JSON.stringify(a),JSON.stringify(c));});
+    groups.push(pool.shift());
+   }
+   const states=groups.map(group=>{
+    if(!group.length||group.length>8||new Set(group).size!==group.length||group.some(id=>!writable.has(id))||!clauses.every(c=>c.some(id=>group.includes(id))))throw Error('Invalid alternative cover.');
+    const reached=new Set([group[0]]),q=[group[0]];
+    for(const id of q)for(const v of x.adj.get(id)??[]){b.spend();if(group.includes(v)&&!reached.has(v)){reached.add(v);q.push(v);}}
+    if(reached.size!==group.length)throw Error('Disconnected alternative cover.');
+    const affected=affectedFor(group);
+    return {group,affected,triplets:rotationTriplets(g,affected,new Set(group),b),best:null,attempts:0,probes:0};
+   });
+   base.diversified={available:cover.groups.length,enumerationLimited:cover.limited??false,groups:states.map(t=>({ids:t.group,attempts:0,probes:0,best:null})),selected:null};
+   let selected=null;
+   for(let round=0;round<12&&!ready&&base.attempts<47&&b.snapshot().remainingWork>2500000;round++){
+    // Fair initial breadth, then allocate by best actual residual score.
+    const order=round<2?states:[...states].sort((a,c)=>(a.best?.score??Infinity)-(c.best?.score??Infinity)||a.group.length-c.group.length||riCompare(JSON.stringify(a.group),JSON.stringify(c.group)));
+    for(const st of order){
+     if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;
+     ids=st.group;affectedIds=st.affected;
+     const prevAttempts=base.attempts,prevProbes=base.localProbes;
+     const accept=item=>{if(!item)return;if(!st.best||item.score<st.best.score)st.best=item;if(item.ready){ready=item;selected=st;}};
+     const points=reformCoverTrial(g,positions,ids,st.best?.feedback.length?st.best.feedback:mandatory,offset,round,b,round%3&&st.best?st.best.points:null,8);
+     // Alternate exact-cyclic projection with conservative pairwise
+     // orientation assistance, never changing the actual cyclic gate.
+     if(round%3===2)projectRotation(g,positions,points,st.triplets,offset,round,b);
+     projectCyclic(g,positions,points,affectedIds,orders,offset,round,b);accept(full(points));
+     if(!ready&&st.best&&round>=1&&base.localProbes<192&&b.snapshot().remainingWork>2500000){
+      const quota=Math.min(round<3?8:16,192-base.localProbes);
+      for(const p of local(st.best,quota).slice(0,2)){if(ready||base.attempts>=47||b.snapshot().remainingWork<=2500000)break;accept(full(p.points));}
+     }
+     st.attempts+=base.attempts-prevAttempts;st.probes+=base.localProbes-prevProbes;
+     const info=base.diversified.groups[states.indexOf(st)];info.attempts=st.attempts;info.probes=st.probes;info.best=st.best?.score??null;
+    }
+   }
+   if(selected){ids=selected.group;affectedIds=selected.affected;base.diversified.selected=ids;}
   }
   if(aresReplayJson(x.f.project,b)!==x.before)throw Error('Coordinated source mutated.');
   if(!ready)return finish('refused','no-geometric-seed');
