@@ -14,7 +14,7 @@ const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const mean=ps=>({x:ps.reduce((s,p)=>s+p.x,0)/ps.length,y:ps.reduce((s,p)=>s+p.y,0)/ps.length});
 // Outcome-blind selection: nearest safe junction, then deterministic nearest
 // neighbor depth-first simple chain. Never run a movement while choosing.
-function select(g,target,count){
+export function selectSquareTrialChain(g,target,count){
  const terminal=new Set(g.terminalRoadIds),safe=new Set([...g.nodesById.keys()].filter(id=>g.incidentRoads.get(id).every(r=>!g.roadClasses.get(r).protected&&!terminal.has(r))));
  const cmp=(a,b)=>dist(g.nodesById.get(a),target)-dist(g.nodesById.get(b),target)||riCompare(a,b);
  const starts=[...safe].sort(cmp),cap=G_MANIFEST.selection.maxVisitsPerGroup;let visits=0,found=null,limited=false;
@@ -60,7 +60,7 @@ export function runSquareMovementPilot(id){
  const center=survey.anchors[0],scale=survey.nominalRadius;
  const scenarios=[{id:'central',target:{x:center.x,y:center.y},count:4,offset:{x:35,y:25}},{id:'middle',target:{x:center.x+scale*.38,y:center.y},count:5,offset:{x:-100,y:60}}];
  const rows=scenarios.map(x=>{
-  const c=select(cg,x.target,x.count),e=select(eg,x.target,x.count);
+  const c=selectSquareTrialChain(cg,x.target,x.count),e=selectSquareTrialChain(eg,x.target,x.count);
   const matched=c.status==='selected'&&e.status==='selected'&&dist(c.centroid,e.centroid)<=scale*.25&&c.distance<=scale*.55&&e.distance<=scale*.55&&Math.max(c.length,e.length)<=2*Math.min(c.length,e.length);
   return {...x,matched,centroidSeparation:c.centroid&&e.centroid?dist(c.centroid,e.centroid):null,
    control:{selection:c,result:direct(control,cg,c,x.offset,survey.boundary)},experimental:{selection:e,result:direct(experimental,eg,e,x.offset,survey.boundary)}};
