@@ -23,3 +23,7 @@ Owner approved numerical experiments including combinations and requested batchi
 
 ## Matrix findings and audit
 66 matched rows: six structural holds removed by cap eight; linear-09 yields candidates with five neighbors at all three displacement limits. No added candidate case from 125% or 150%; do not infer displacement never helps. Radial-12/16 clear angular gate but fail contact checks. Radial-14/17 one residual angular violation each. The distinct matrix solver did not rediscover the strict R4 positive control. Prioritize the original displacement allowance, verify first retained seed per arm independently, then use coupled angular and residual contact diagnostics under approved caps. Separate read-only face consequences work remains pending; cyclic gate stays mandatory. No benchmark recovery credit until independent audit.
+
+
+## Independent reform audit qualified; targeted follow-up
+All three Linear-09 witnesses independently verified under their fixed experimental profiles. Five neighbors, 30 roads, zero swept unresolved; original 100% displacement has least total movement. Strict 21/49, expanded 22/49. Focus next search on nine unresolved combined cases with eight-neighbor maximum and original displacement only; combine archived angular/contact near misses, two-variable angular proposals and actual contact feedback under the same root. No safety gate change. Separate face/ownership analysis not yet implemented.

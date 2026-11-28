@@ -98,7 +98,27 @@ export async function searchHoldoutNumericalReform(caseId,arm){
  if(!profile)throw Error('Frozen reform arm required.');
  return searchCombined(caseId,true,true,false,false,profile);
 }
-async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null){
+export const REFORM_REPAIR_CASES=Object.freeze(COMBINED_CASES.filter(id=>!['h:linear-09','h:radial-24'].includes(id)));
+export async function searchHoldoutReformRepair(caseId){
+ if(!REFORM_REPAIR_CASES.includes(caseId))throw Error('Frozen reform repair case required.');
+ return searchCombined(caseId,true,true,false,false,REFORM_ARMS.find(x=>x.id==='c8-d100'),true);
+}
+const reformRepairArchive=new Map();
+function readReformRepairArchive(){
+ if(reformRepairArchive.size===11)return reformRepairArchive;
+ for(const job of [140855972403,140855972435,140855972451,140855972454,140855972462,140855972463,140855972464,140855972471,140855972477,140855972480,140855972483,140855972484,140855972487,140855972495,140855972505,140855972511]){
+  const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-reform-46105076686-'+job+'.json',import.meta.url),'utf8'));
+  if(e.run!==46105076686||e.attempt!==1||e.source!=='26de6242316fa78a545375ed15c83f384bf8909c'||e.job!==job)throw Error('Reform repair archive identity mismatch.');
+  for(const r of e.rows.filter(x=>x.profile.id==='c8-d100')){
+   const lock=holdoutLockedRow(r.caseId);
+   if(reformRepairArchive.has(r.caseId)||!COMBINED_CASES.includes(r.caseId)||r.authority!=='none'||r.source!==lock.source||JSON.stringify(r.offset)!==JSON.stringify(lock.offset)||r.profile.cap!==8||r.profile.multiplier!==1)throw Error('Reform repair row mismatch.');
+   reformRepairArchive.set(r.caseId,riFreeze(r));
+  }
+ }
+ if(reformRepairArchive.size!==11)throw Error('Incomplete reform repair archive.');
+ return reformRepairArchive;
+}
+async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false,coupledAware=false,reform=null,repair=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
  if(localAware&&!LOCAL_ANGULAR_CASES.includes(caseId))throw Error('Frozen local angular case required.');
@@ -192,7 +212,7 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
    const cover=base.earlyScope.selectedClosure.length?{status:'selected-closure-held',groups:[],states:0}:reform?reformRotationCoverGroups(clauses,adj,b,cap):rotationCoverGroups(clauses,adj,b);
    base.rotationCover={status:cover.status,groups:cover.groups,states:cover.states,limited:cover.limited??false,emptyMandatory:mandatoryClauses.filter(c=>!c.length).length,emptyRotation:rotationClauses.filter(c=>!c.eligible.length).length};
    if(reform){
-    base.strategy='numerical-reform';
+    base.strategy=repair?'reform-coupled-contact':'numerical-reform';
     const historical=readCyclicArchive().get(caseId);
     if(JSON.stringify(historical.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Reform baseline changed.');
     // Minimum is diagnostic, not proof of geometric feasibility.
@@ -204,6 +224,96 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=
     groups.sort((a,c)=>a.length-c.length||riCompare(JSON.stringify(a),JSON.stringify(c)));
     const retained=historical.bestRotation?.neighbors??[];
     const residual=LOCAL_ANGULAR_CASES.includes(caseId)?readLocalArchive().get(caseId).bestRotation?.neighbors??[]:[];
+    if(repair){
+     const old=readReformRepairArchive().get(caseId);
+     if(JSON.stringify(old.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Repair baseline changed.');
+     base.localProbes=0;base.repair={firstProbes:0,secondProbes:0,pairs:0,contactTrials:0,archivedStarts:0,bestLocal:null,scopeLocal:0};
+     const starts=[],keys=new Set(),ranked=[];
+     function addStart(neighbors){
+      if(!neighbors?.length)return;
+      const group=neighbors.map(n=>n.id).sort(riCompare);
+      if(!groups.some(g=>JSON.stringify(g)===JSON.stringify(group)))return;
+      const points=new Map();
+      for(const n of neighbors){b.spend(8);const orig=g.nodesById.get(n.id);if(!orig||orig.x!==n.old.x||orig.y!==n.old.y||!Number.isFinite(n.point.x)||!Number.isFinite(n.point.y)||Math.hypot(n.point.x-orig.x,n.point.y-orig.y)>displacementLimit)throw Error('Repair archive coordinate mismatch.');points.set(n.id,n.point);}
+      const key=JSON.stringify(group.map(id=>[id,points.get(id)]));if(keys.has(key))return;keys.add(key);
+      starts.push({group,points,cost:0});base.repair.archivedStarts++;
+     }
+     addStart(old.best?.neighbors);addStart(old.bestRotation?.neighbors);addStart(residual);addStart(retained);
+     const affected=group=>{const out=new Set([...positions.keys(),...group]);for(const id of [...out])for(const v of g.adjacency.get(id)){b.spend();out.add(v);}return [...out].sort(riCompare);};
+     const changes=(group,points)=>{const pos=new Map([...positions,...points]);return affected(group).filter(id=>{b.spend();return !cyclicEqual(oldOrders.get(id),order(g,id,pos,b));});};
+     const queue=[];
+     function trial(state,arm){
+      if(base.attempts>=48||base.seeds.length>=2)return;
+      const item=evaluate(state.group,state.points,arm);
+      if(item&&item.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:state.group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(state.points.get(id))})),attempt:base.attempts});
+      if(item&&item.score>0&&item.feedback?.length)queue.push({...state,item});
+      return item;
+     }
+     // Replay the bounded archived candidates first, including the contact near misses.
+     for(const state of starts)trial(state,'repair-archived');
+     // Add at most eight fresh starts at the smallest structural covers.
+     for(const group of groups.slice(0,8)){
+      if(base.attempts>=12||base.seeds.length>=2)break;
+      const points=reformCoverTrial(g,positions,group,mandatory,proposalOffset,0,b,null,cap);
+      projectCyclic(g,positions,points,affected(group),oldOrders,proposalOffset,0,b);
+      const state={group,points,cost:0};starts.push(state);trial(state,'repair-minimum-cover');
+     }
+     // Select best distinct starting groups and preserve contact-cleared starts.
+     for(const state of starts)state.changed=changes(state.group,state.points);
+     starts.sort((a,c)=>a.changed.length-c.changed.length||a.group.length-c.group.length);
+     const selected=starts.slice(0,4),seenLocal=new Set();
+     const rank=(a,c)=>a.changed.length-c.changed.length||a.cost-c.cost;
+     function probe(state,vars,targets,quota,stage,out){
+      const streams=vars.map(id=>({id,it:angularLineProposals(state.points.get(id),g.nodesById.get(id),displacementLimit,localAngularLines(g,positions,state.points,targets,id,b),b)}));
+      let taken=0,active=true;
+      while(active&&taken<quota&&base.localProbes<192){
+       active=false;
+       for(const stream of streams){
+        if(taken>=quota||base.localProbes>=192)break;
+        const p=stream.it.next();if(p.done)continue;active=true;taken++;b.expand();base.localProbes++;base.repair[stage+'Probes']++;
+        const orig=g.nodesById.get(stream.id);b.spend(city.survey.boundary.length+4);
+        if(!insideOrOn(p.value,city.survey.boundary)||Math.hypot(p.value.x-orig.x,p.value.y-orig.y)>displacementLimit||p.value.x===orig.x&&p.value.y===orig.y){base.repair.scopeLocal++;continue;}
+        const points=new Map(state.points);points.set(stream.id,p.value);
+        const key=JSON.stringify(state.group.map(id=>[id,points.get(id)]));if(seenLocal.has(key))continue;seenLocal.add(key);
+        const changed=changes(state.group,points);
+        if(stage==='first'&&changed.length>state.changed.length+1)continue;
+        const next={group:state.group,points,changed,firstId:state.firstId??stream.id,original:state.original??state.changed,cost:state.cost+Math.hypot(p.value.x-state.points.get(stream.id).x,p.value.y-state.points.get(stream.id).y)};
+        if(stage==='second')base.repair.pairs++;
+        if(base.repair.bestLocal===null||changed.length<base.repair.bestLocal)base.repair.bestLocal=changed.length;
+        out.push(next);
+       }
+      }
+     }
+     const first=[];
+     for(const state of selected){
+      if(!state.changed.length)continue;
+      const vars=state.group.filter(v=>state.changed.some(id=>id===v||[...g.adjacency.get(id)].includes(v)));
+      const local=[];probe(state,vars,state.changed,Math.floor(96/Math.max(1,selected.length)),'first',local);local.sort(rank);
+      for(const id of vars){const own=local.filter(x=>x.firstId===id);if(own.length)first.push(own[0]);const plateau=own.find(x=>x.changed.length===state.changed.length&&x!==own[0]);if(plateau)first.push(plateau);}
+     }
+     first.sort(rank);const second=[],diverse=[],used=new Set();
+     for(const t of first){const k=JSON.stringify([t.group,t.firstId]);if(used.has(k))continue;used.add(k);diverse.push(t);if(diverse.length===8)break;}
+     for(let i=0;i<diverse.length;i++){
+      const t=diverse[i],targets=[...new Set([...t.original,...t.changed])].sort(riCompare);
+      const vars=t.group.filter(v=>v!==t.firstId&&targets.some(id=>id===v||[...g.adjacency.get(id)].includes(v)));
+      probe(t,vars,targets,Math.floor((192-base.localProbes)/(diverse.length-i)),'second',second);
+     }
+     ranked.push(...first,...second);ranked.sort(rank);
+     for(const state of ranked){if(base.attempts>=32||base.seeds.length>=2)break;trial(state,'repair-coupled-angular');}
+     // Use actual blocking contact pairs when available, not just baseline pairs.
+     // Prioritize candidates already passing cyclic order; exact full gate remains mandatory.
+     let iterations=0;
+     while(queue.length&&base.attempts<48&&base.seeds.length<2&&iterations<48){
+      queue.sort((a,c)=>a.item.score-c.item.score||a.group.length-c.group.length);
+      const state=queue.shift(),{group,item}=state;
+      const points=reformCoverTrial(g,positions,group,item.feedback,proposalOffset,iterations++,b,item.points,cap);
+      projectCyclic(g,positions,points,affected(group),oldOrders,proposalOffset,iterations,b);
+      base.repair.contactTrials++;trial({group,points,cost:0},'repair-residual-contact');
+     }
+     if(aresReplayJson(f.project,b)!==before)throw Error('Repair search mutated source.');
+     aresReplayJson(base,b);
+     return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
+    }
     const states=groups.slice(0,16).map(group=>{
      const affected=new Set(exactChanged);
      for(const id of [...positions.keys(),...group]){b.spend();affected.add(id);for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}}
