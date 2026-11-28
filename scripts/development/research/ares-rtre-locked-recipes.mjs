@@ -1,3 +1,4 @@
+import {squareRecoveryLockedRow,materializeSquareRecoveryCase} from './square-trial-recovery-lock.mjs';
 import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {tournamentRtreLock} from './ares-p5-tournament-lock.mjs';
 import {materializeTournamentCity} from './ares-p5-tournament-inventory.mjs';
@@ -20,6 +21,7 @@ export function lockedRtreCase(id){
   if(typeof id!=='string')throw Error('Frozen RTRE recipe ID required, not a city.');
   const old=original.rows.find(r=>r.id===id);
   if(old)return old;
+  if(id.startsWith('sq:'))return squareRecoveryLockedRow(id);
   if(id.startsWith('h:'))return holdoutRtreLock(id);
   if(id.startsWith('t:'))return tournamentRtreLock(id);
   const slot=slots.get(id);
@@ -29,6 +31,7 @@ export function lockedRtreCase(id){
   return riFreeze({id,source:city.source,limits:G_MANIFEST.search.root,slot,selectedRoadIds:group.selectedRoadIds});
 }
 export function materializeLockedRtreCase(id){
+  if(typeof id==='string'&&id.startsWith('sq:'))return materializeSquareRecoveryCase(id);
   const lock=lockedRtreCase(id);
   if(!lock.slot)return materializeAresP3Case(id);
   const project=lock.tournament?materializeTournamentCity(lock.slot.city):lock.holdout?materializeHoldoutCity(lock.slot.city):materializeGCorpusCity(lock.slot.city);

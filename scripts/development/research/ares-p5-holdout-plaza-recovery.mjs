@@ -1,3 +1,4 @@
+import {squareRecoveryLockedRow} from './square-trial-recovery-lock.mjs';
 import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {createHash} from 'node:crypto';
 import {plazaExperimentCase,PLAZA_EXPERIMENT_CASES} from './ares-p5-holdout-plaza-experiment-lock.mjs';
@@ -37,7 +38,7 @@ export function samePlazaRecoveryOrder(a,c){if(a.length!==c.length)return false;
 // No caller project, coordinates, writable list, or permission token.
 // The single shared root belongs to the fixed experimental entry point.
 async function prepare(caseId,b,tournament=false){
- const prior=tournament?tournamentLockedRow(caseId):plazaExperimentCase(caseId,'strict'),lock=tournament?prior:holdoutLockedRow(caseId),f=materializeLockedRtreCase(caseId);
+ const prior=tournament?(caseId.startsWith('sq:')?squareRecoveryLockedRow(caseId):tournamentLockedRow(caseId)):plazaExperimentCase(caseId,'strict'),lock=tournament?prior:holdoutLockedRow(caseId),f=materializeLockedRtreCase(caseId);
  const before=aresReplayJson(f.project,b),bytes=Buffer.from(before,'utf8');b.spend(Math.max(1,Math.ceil(bytes.length/64)));
  if(createHash('sha256').update(bytes).digest('hex')!==lock.source)throw Error('Plaza recovery source mismatch.');
  const city=f.project.city,report=await inspectFreshRtreNeighborhood(caseId,{mode:'adaptive',maxObjects:10000,maxHops:6},b);
@@ -115,8 +116,9 @@ export async function searchCoordinatedPlazaRecovery(caseId){return coordinatedP
 export async function searchDiversifiedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true);}
 export async function searchResidualPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true,true);}
 export async function searchTournamentPlazaRecovery(caseId){tournamentLockedRow(caseId);return coordinatedPlazaSearch(caseId,true,false,true);}
+export async function searchSquareTrialRecovery(caseId){squareRecoveryLockedRow(caseId);return coordinatedPlazaSearch(caseId,true,false,true);}
 async function coordinatedPlazaSearch(caseId,diversified,residual=false,tournament=false){
- const prior=tournament?tournamentLockedRow(caseId):plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+ const prior=tournament?(caseId.startsWith('sq:')?squareRecoveryLockedRow(caseId):tournamentLockedRow(caseId)):plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
  const base={caseId,source:prior.source,authority:'none',attempts:0,localProbes:0,minimum:null,best:null,construction:null,audit:null};
  const finish=(status,reason=null)=>riFreeze({...base,status,reason,stats:b.snapshot()});
  try{
