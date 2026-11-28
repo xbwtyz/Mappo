@@ -27,3 +27,7 @@ Owner approved numerical experiments including combinations and requested batchi
 
 ## Independent reform audit qualified; targeted follow-up
 All three Linear-09 witnesses independently verified under their fixed experimental profiles. Five neighbors, 30 roads, zero swept unresolved; original 100% displacement has least total movement. Strict 21/49, expanded 22/49. Focus next search on nine unresolved combined cases with eight-neighbor maximum and original displacement only; combine archived angular/contact near misses, two-variable angular proposals and actual contact feedback under the same root. No safety gate change. Separate face/ownership analysis not yet implemented.
+
+
+## Combined repair qualified — Campaign II-A begins
+No new seeds after 432 full evaluations and 1728 probes. Two radial cases pass rotation but are contact-held; four other cases have one remaining order violation (radial-14/17, planned-10, organic-20). Existing rates unchanged. Replay archived angular and contact witnesses independently, inspect half-edge walk changes and residual contact endpoint closure, record graph validity separately. This diagnoses combinatorial embedding effects only; not geometric face validity, ownership, access or building reconciliation. No changes to acceptance policy. Read-only dependency mapping is still pending. Numerical cap expansion remains detached.
