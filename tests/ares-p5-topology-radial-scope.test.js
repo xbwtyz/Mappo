@@ -15,7 +15,7 @@ for(const id of RADIAL_IDS.filter(id=>id!=='radial-small:eight-loop:50:y'))test(
     assert.ok(Object.isFrozen(c));assert.deepEqual(c.endpointExclusions,[]);
   }
   assert.equal(r.authority,'none');assert.equal(r.topologyChanged,false);
-  assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
+  assert.ok(r.stats.work>0);assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.ok(r.scope.admittedCount<=10000);assert.ok(r.conflicts.length>0);
   for(const c of r.conflicts){
     if(c.status==='research-contact-only'){assert.equal(r.scope.mandatoryComplete,true);assert.deepEqual(c.reasons,[]);assert.deepEqual(c.endpointExclusions,[]);}

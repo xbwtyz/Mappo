@@ -18,7 +18,7 @@ for(const id of ['g:radial-small:eight-loop:50:y','g:linear-medium:eight-chain:1
   if(id.includes('linear-medium'))assert.equal(r.conflicts.filter(c=>c.status==='research-contact-only').length,9);
   if(id.includes('radial-small')){assert.equal(r.conflicts.filter(c=>c.status==='research-contact-only').length,1);assert.ok(r.conflicts.some(c=>c.status==='blocked'&&c.endpointExclusions.length>0));}
   assert.match(r.source,/^[a-f0-9]{64}$/);assert.ok(r.conflicts.length>0);
-  assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
+  assert.ok(r.stats.work>0);assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.ok(Object.isFrozen(r));assert.ok(r.conflicts.every(c=>['blocked','research-contact-only'].includes(c.status)));
   assert.ok(r.conflicts.every(c=>c.status==='blocked'||(['interior-interior','endpoint-interior'].includes(c.contact.kind)&&c.reasons.length===0)));
   const deny=await observeP5Topology(id,{...all,mode:'adaptive'});

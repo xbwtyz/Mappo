@@ -3,7 +3,8 @@ import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recip
 import {inspectFreshRtreNeighborhood} from './ares-rtre-fresh-neighborhood.mjs';
 import {createSpatialPreservationBudget} from '../../../src/core/spatial-recovery-contract.js';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
-import {classifyRoad} from '../../../src/core/road-graph.js';
+import {classifyRoad,iterateRoadGraph} from '../../../src/core/road-graph.js';
+import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 import {riFreeze,riCompare} from '../../../src/core/road-impact-model.js';
 import {P5_LIMITS,p5Permissions,classifyP5Contact,p5PermissionReasons} from './ares-p5-topology-contract.mjs';
 
@@ -14,9 +15,13 @@ const opaque=(row,fields,budget)=>{let unknown=false;for(const k of Object.keys(
 // provenance claims, arbitrary coordinates or a new budget. Adaptive P4
 // observation is reused solely for geometry/scope discovery, not permission.
 export async function observeP5Topology(caseId,input){
+  const budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+  return (await observeP5WithBudget(caseId,input,budget)).evidence;
+}
+async function observeP5WithBudget(caseId,input,budget){
   const permissions=p5Permissions(input);
   if(typeof caseId!=='string')throw Error('Frozen RTRE recipe ID required.');
-  const lock=lockedRtreCase(caseId),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+  const lock=lockedRtreCase(caseId);
   const report=await inspectFreshRtreNeighborhood(caseId,{mode:'adaptive',maxObjects:P5_LIMITS.maxObjects,maxHops:P5_LIMITS.maxHops},budget);
   const f=materializeLockedRtreCase(caseId),source=aresReplayJson(f.project,budget),bytes=Buffer.from(source,'utf8');
   budget.spend(Math.max(1,Math.ceil(bytes.length/64)));
@@ -73,5 +78,112 @@ export async function observeP5Topology(caseId,input){
   if(aresReplayJson(f.project,budget)!==source)throw Error('P5 observation mutated source.');
   const evidence={version:2,caseId,source:fingerprint,authorship:'fresh-frozen-generator-recipe',permissions,preflight:report.status,requested:report.requested,conflicts,other,scope:{mandatoryComplete,wholeNeighborhoodComplete:complete,admittedCount:report.entries.length,omittedRefs:report.omittedRefs},authority:'none',topologyChanged:false};
   aresReplayJson(evidence,budget);
-  return riFreeze({...evidence,stats:budget.snapshot()});
+  return {evidence:riFreeze({...evidence,stats:budget.snapshot()}),f,source,report};
+}
+
+// C1 is deliberately limited to the two predeclared frozen interior-crossing
+// pilots. One shared root, no fallback, no arbitrary project or editable list.
+// A graph-valid construction is NOT an independently verified recovery.
+const c1Cases=new Set(['g:radial-small:eight-loop:100:x','g:linear-medium:eight-chain:100:diagonal']);
+const p5Point=n=>({x:n.x,y:n.y});
+const samePoint=(a,b)=>Object.is(a.x,b.x)&&Object.is(a.y,b.y);
+const p5Sort=(n,b)=>b.spend(Math.max(1,n*Math.ceil(Math.log2(n+1))));
+function p5Graph(city,budget){
+  budget.spend(Math.max(1,city.nodes.length+city.roads.length));
+  const it=iterateRoadGraph(city);let charged=0;
+  try{for(;;){
+    const step=it.next();
+    if(step.done){if(step.value.work>charged)budget.spend(step.value.work-charged);return step.value;}
+    if(step.value.stage==='road-graph-intersections'){budget.spend(64);charged+=64;}else budget.spend();
+  }}finally{it.return();}
+}
+export async function constructP5SplitPilot(caseId,input){
+  if(!c1Cases.has(caseId))throw Error('Frozen P5 C1 pilot ID required.');
+  const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+  let sourceHash=null,attempts=0;
+  const finish=(status,reason,extra={})=>riFreeze({version:1,caseId,source:sourceHash,status,reason,attempts,
+    authority:'none',independentlyVerified:false,...extra,stats:budget.snapshot()});
+  try{
+    const {evidence,f,source,report}=await observeP5WithBudget(caseId,permissions,budget);
+    sourceHash=evidence.source;
+    if(!evidence.scope.mandatoryComplete||evidence.other.length||!evidence.conflicts.length||
+      evidence.conflicts.some(c=>c.status!=='research-contact-only'||c.contact.kind!=='interior-interior'))
+      return finish('preflight-refused','contact-closure');
+    const city=f.project.city,accepted=p5Graph(city,budget);
+    if(!accepted.valid)return finish('preflight-refused','invalid-source-graph');
+    const admitted=new Set(report.entries.map(e=>e.ref.collection+':'+e.ref.id));
+    const terminal=new Set(accepted.terminalRoadIds),protectedNodes=new Set(city.plaza?.vertices??[]);
+    for(const gate of city.gates??[]){budget.spend();if(gate.connection?.cityNodeId!=null)protectedNodes.add(gate.connection.cityNodeId);}
+    for(const k of ['waterFaces','terrainFaces'])for(const row of city[k]??[])for(const id of row.vertices??[]){budget.spend();protectedNodes.add(id);}
+    for(const road of city.roads){budget.spend();if(classifyRoad(road).protected||terminal.has(road.id)){protectedNodes.add(road.a);protectedNodes.add(road.b);}}
+    const requested=new Map(report.requested.map(r=>[r.ref.id,r.point]));
+    const nodes=city.nodes.map(n=>{budget.spend();return requested.has(n.id)?{...n,...requested.get(n.id)}:{...n};});
+    const byId=new Map(nodes.map(n=>[n.id,n])),roads=new Map(city.roads.map(r=>[r.id,r]));
+    const used=new Set([...byId.keys(),...roads.keys()]);budget.spend(Math.max(1,used.size+admitted.size+requested.size));
+    const admissible=road=>[road.a,road.b].every(id=>admitted.has('nodes:'+id)&&!protectedNodes.has(id)&&!opaque(byId.get(id),nodeFields,budget))&&
+      admitted.has('roads:'+road.id)&&!classifyRoad(road).protected&&!terminal.has(road.id)&&!opaque(road,roadFields,budget);
+    const translated=[];
+    for(const road of city.roads){
+      budget.spend();if(!requested.has(road.a)&&!requested.has(road.b))continue;
+      if(!admissible(road))return finish('preflight-refused','translated-road-closure');
+      translated.push(road.id);
+    }
+    // Reserve typed IDs deterministically from sorted contact pairs and
+    // original road order. All existing IDs remain occupied throughout.
+    const reserve=(prefix,i)=>{let id=prefix+i;for(let n=1;used.has(id);n++){budget.spend();id=prefix+i+'-'+n;}budget.spend();used.add(id);return id;};
+    budget.expand();attempts=1;
+    const cuts=new Map(),added=[],contacts=[];
+    for(const c of evidence.conflicts){
+      budget.spend(16);
+      const [a,b]=c.roadIds.map(id=>roads.get(id));
+      if(!admissible(a)||!admissible(b))return finish('candidate-refused','split-road-closure');
+      const fresh=classifyP5Contact(byId.get(a.a),byId.get(a.b),byId.get(b.a),byId.get(b.b));
+      if(fresh.kind!=='interior-interior'||aresReplayJson(fresh,budget)!==aresReplayJson(c.contact,budget))
+        return finish('candidate-refused','contact-mismatch');
+      // No proximity snapping or multi-contact merge in C1.
+      for(const n of [...nodes,...added]){budget.spend();if(Math.hypot(n.x-fresh.point.x,n.y-fresh.point.y)<=1e-7)return finish('candidate-refused','coincident-or-near-contact');}
+      const node={id:reserve('N-P5-',added.length+1),...fresh.point};
+      added.push(node);contacts.push({roadIds:[a.id,b.id],node:{...node},parameters:[fresh.ab[0],fresh.ba[0]]});
+      for(const [road,t] of [[a,fresh.ab[0]],[b,fresh.ba[0]]]){
+        budget.spend();if(!cuts.has(road.id))cuts.set(road.id,[]);
+        cuts.get(road.id).push({id:node.id,t});
+      }
+    }
+    const lineage=[],nextRoads=[];let serial=0;
+    const sorted=[...city.roads].sort((a,b)=>riCompare(a.id,b.id));p5Sort(sorted.length,budget);
+    for(const road of sorted){
+      budget.spend();const list=cuts.get(road.id);
+      if(!list){nextRoads.push({...road});continue;}
+      p5Sort(list.length,budget);list.sort((a,b)=>a.t-b.t||riCompare(a.id,b.id));
+      if(list.some((c,i)=>i&&c.t-list[i-1].t<=1e-9))return finish('candidate-refused','ambiguous-cut-order');
+      const chain=[road.a,...list.map(c=>c.id),road.b],children=[];
+      for(let i=0;i<chain.length-1;i++){
+        budget.spend();const child={...road,id:i===0?road.id:reserve('RD-P5-',++serial),a:chain[i],b:chain[i+1]};
+        nextRoads.push(child);children.push({...child});
+      }
+      lineage.push({parent:road.id,originalEndpoints:[road.a,road.b],children});
+    }
+    // Preserve original ordering for unsplit records and the first child.
+    const byParent=new Map(lineage.map(l=>[l.parent,l.children]));
+    const ordered=city.roads.flatMap(r=>{budget.spend();return byParent.get(r.id)??[{...r}];});
+    const candidate={...city,nodes:[...nodes,...added],roads:ordered};
+    const final=p5Graph(candidate,budget);
+    if(aresReplayJson(f.project,budget)!==source)throw Error('P5 C1 source mutated.');
+    if(!final.valid)return finish('candidate-refused','invalid-final-graph',{issues:final.issues});
+    if(final.components.length!==1||accepted.components.length!==1||
+      final.nodesById.size!==accepted.nodesById.size+added.length||
+      final.roadsById.size!==accepted.roadsById.size+serial||
+      [...accepted.nodesById.keys()].some(id=>!final.nodesById.has(id))||
+      [...accepted.roadsById.keys()].some(id=>!final.roadsById.has(id)))
+      return finish('candidate-refused','identity-or-connectivity');
+    for(const [id,n] of accepted.nodesById){budget.spend();if(!samePoint(final.nodesById.get(id),requested.get(id)??n))return finish('candidate-refused','exact-intent');}
+    const witness={requested:report.requested,translatedRoadIds:translated.sort(riCompare),contacts,lineage,
+      reservedNodeIds:added.map(n=>n.id),reservedRoadIds:lineage.flatMap(l=>l.children.slice(1).map(c=>c.id)),
+      graph:{nodes:final.nodesById.size,roads:final.roadsById.size,components:final.components.length}};
+    aresReplayJson(witness,budget);
+    return finish('graph-candidate','independent-audit-pending',{witness});
+  }catch(e){
+    if(e instanceof LareBudgetExceeded)return finish('work-limit',e.resource);
+    throw e;
+  }
 }
