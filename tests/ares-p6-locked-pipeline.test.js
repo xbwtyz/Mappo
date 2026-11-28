@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {observeP6LockedDryPipeline,bindP6RoadRecords} from '../scripts/development/research/ares-p6-locked-pipeline.mjs';
+import {observeP6TopologyIdentity} from '../scripts/development/research/ares-p6-topology-identity.mjs';
 import {extractRoadFaces,matchExistingFaces} from '../src/core/road-faces.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
@@ -59,6 +60,25 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    assert.equal(pair.candidateKey,match.added[0].candidateKey);
    assert.ok(pair.oldArea>0&&pair.newArea>0&&pair.overlap>=0);
    assert.ok(Number.isFinite(pair.meanDisplacement));
+   const topology=e.topologyIdentity;
+   assert.equal(topology.status,'topology-correspondence-observed');
+   assert.equal(topology.oldId,'BLK-0053');
+   assert.equal(topology.candidateKey,match.added[0].candidateKey);
+   assert.equal(topology.valid,false);assert.equal(topology.authority,'none');
+   assert.equal(topology.ownership,'not-assigned');
+   assert.equal(topology.landFit,'not-evaluated');
+   assert.ok(topology.retainedAreaRatio<0.01);
+   assert.deepEqual(topology.directBlockReferences.properties,source.properties.filter(p=>p.blockId===topology.oldId).map(p=>p.id));
+   const identity={...match,valid:false,correspondenceValid:true,authority:'none'};
+   const b=root();
+   const observed=observeP6TopologyIdentity(source,legacy,identity,b);
+   assert.deepEqual(observed,topology);
+   assert.equal(observeP6TopologyIdentity(source,legacy,{...identity,removed:[...identity.removed,...identity.removed]},root()).status,'not-proven');
+   assert.equal(observeP6TopologyIdentity(source,legacy,{...identity,preserved:identity.preserved.slice(1)},root()).reason,'incomplete-census');
+   const wrongCycle={...source,blocks:source.blocks.map(r=>r.id===topology.oldId?{...r,vertices:[...r.vertices].reverse()}:r)};
+   assert.equal(observeP6TopologyIdentity(wrongCycle,legacy,identity,root()).reason,'different-directed-cycle');
+   const otherRoad={...legacy,faces:legacy.faces.map(f=>f.key===topology.candidateKey?{...f,roadIds:[f.roadIds[1],...f.roadIds.slice(1)]}:f)};
+   assert.equal(observeP6TopologyIdentity(source,otherRoad,identity,root()).reason,'different-boundary-road');
   }
   console.log('P6_REFUSAL_EVIDENCE '+JSON.stringify({id,legacyParity:true,...e}));
  }
