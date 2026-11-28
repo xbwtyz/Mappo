@@ -13,7 +13,7 @@ import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
 export const D2_LOCKS=riFreeze(JSON.parse(readFileSync(new URL('../../../tests/fixtures/ares-p5-d2-overlap-inventory.json',import.meta.url),'utf8')).rows);
 const map=new Map(D2_LOCKS.map(x=>[x.id,x]));
 const pairKey=ids=>JSON.stringify([...ids].sort(riCompare));
-function interval(a,b,c,d,budget){
+export function inspectP5OverlapInterval(a,b,c,d,budget){
   budget.spend(16);
   const dx=b.x-a.x,dy=b.y-a.y,ex=d.x-c.x,ey=d.y-c.y,l2=dx*dx+dy*dy;
   if(l2<=1e-12||ex*ex+ey*ey<=1e-12)return null;
@@ -22,11 +22,15 @@ function interval(a,b,c,d,budget){
   const u=((c.x-a.x)*dx+(c.y-a.y)*dy)/l2,v=((d.x-a.x)*dx+(d.y-a.y)*dy)/l2;
   const lo=Math.max(0,Math.min(u,v)),hi=Math.min(1,Math.max(u,v));
   if(hi-lo<=1e-9)return null;
-  const cuts=segmentCuts(a,b,c,d);
-  if(!cuts.length)return null;
+  // segmentCuts lists endpoint cuts on its FIRST segment. If that
+  // segment lies wholly inside the second, its list may be empty.
+  // Preserve both lists; the reverse query is not a new tolerance.
+  budget.spend(16);
+  const forward=segmentCuts(a,b,c,d),reverse=segmentCuts(c,d,a,b);
+  if(!forward.length&&!reverse.length)return null;
   const length=Math.sqrt(l2)*(hi-lo),exact=det===0&&off1===0&&off2===0;
   const firstContained=lo===0&&hi===1,secondContained=Math.min(u,v)>=0&&Math.max(u,v)<=1;
-  return {lo,hi,length,exact,offsets:[off1,off2],det,
+  return {lo,hi,length,exact,offsets:[off1,off2],det,directionalCuts:{forward,reverse},legacyForwardMiss:forward.length===0,
     relation:firstContained&&secondContained?'duplicate-span':firstContained||secondContained?'contained-span':'partial-span'};
 }
 export function analyzeP5OverlapCase(caseId){
@@ -34,7 +38,7 @@ export function analyzeP5OverlapCase(caseId){
   if(!lock)throw Error('Frozen D2 overlap case required.');
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
   const r={version:1,caseId,source:null,status:'unverified',authority:'none',topologyChanged:false,reason:null,
-    overlapPairs:0,endpointPairs:0,components:[],pairs:[],unmatched:[],unexpected:[]};
+    overlapPairs:0,endpointPairs:0,components:[],pairs:[],unmatched:[],unexpected:[],directionalMisses:[]};
   const finish=()=>riFreeze({...r,stats:b.snapshot()});
   try{
     const recipe=lockedRtreCase(caseId),f=materializeLockedRtreCase(caseId),city=f.project.city;
@@ -55,7 +59,7 @@ export function analyzeP5OverlapCase(caseId){
       const [p,q,x,y]=[at(a.a),at(a.b),at(c.a),at(c.b)];
       if(Math.max(p.x,q.x)+1e-6<Math.min(x.x,y.x)||Math.max(x.x,y.x)+1e-6<Math.min(p.x,q.x)||
         Math.max(p.y,q.y)+1e-6<Math.min(x.y,y.y)||Math.max(x.y,y.y)+1e-6<Math.min(p.y,q.y))continue;
-      const span=interval(p,q,x,y,b);
+      const span=inspectP5OverlapInterval(p,q,x,y,b);
       if(!span)continue;
       const ids=[a.id,c.id],key=pairKey(ids),old=expected.get(key);
       if(!old){r.unexpected.push(ids);continue;}
@@ -65,6 +69,7 @@ export function analyzeP5OverlapCase(caseId){
     }
     r.unmatched=lock.overlaps.filter(x=>!found.has(pairKey(x.roadIds))).map(x=>x.roadIds);
     r.overlapPairs=r.pairs.length;r.endpointPairs=lock.endpoints.length;
+    r.directionalMisses=r.pairs.filter(p=>p.span.legacyForwardMiss).map(p=>({roadIds:p.roadIds,span:p.span}));
     // Connected components of overlapping parent identities, with linked
     // endpoint contacts. Counts of pairs are not independent repairs.
     const seen=new Set();
