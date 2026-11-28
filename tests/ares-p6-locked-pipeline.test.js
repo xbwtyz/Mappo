@@ -33,6 +33,9 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.ok(r.pipeline.affectedProperties.rows.length>0);
   assert.equal(r.pipeline.propertyAudit.status,'matched');
   assert.equal(r.pipeline.propertyFit.status,'property-fit-observed');
+  assert.equal(r.pipeline.parcelReshapes.status,'parcel-reshape-observed');
+  assert.equal(r.pipeline.parcelReshapes.rows.length,r.pipeline.propertyFit.rows.length);
+  console.log('P6_LOCKED_PARCEL_RESHAPES '+JSON.stringify({id,counts:r.pipeline.parcelReshapes.counts,attempts:r.pipeline.parcelReshapes.rows.reduce((n,r)=>n+r.attempts,0)}));
   assert.equal(r.pipeline.propertyFit.rows.length,r.pipeline.propertyAudit.expandedCount);
   console.log('P6_LOCKED_PROPERTY_FIT '+JSON.stringify({id,counts:r.pipeline.propertyFit.counts}));
   assert.equal(r.pipeline.propertyAudit.baseCount,r.pipeline.affectedProperties.rows.length);

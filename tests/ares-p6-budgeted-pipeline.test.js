@@ -9,6 +9,9 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6ParcelReshapes} from '../scripts/development/research/ares-p6-parcel-reshapes.mjs';
+import {stampRoadGenerated} from '../src/core/road-provenance.js';
+import {validatePlotTiling027} from '../src/core/plot-partition-027.js';
 import {observeP6PropertyFit} from '../scripts/development/research/ares-p6-property-fit.mjs';
 import {shapeContained} from '../src/core/building-validation.js';
 import {propertyFits} from '../src/core/placement.js';
@@ -57,7 +60,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,14);
+ assert.equal(result.ledger.length,15);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -188,6 +191,25 @@ function verify(source,candidate,legacy,extraction,label){
  assert.throws(()=>observeP6PropertyFit(source,extraction,audit,root(1)),LareBudgetExceeded);
  if(audit.rows.length)assert.equal(observeP6PropertyFit(source,extraction,{...audit,rows:[{...audit.rows[0],candidateKeys:['absent']}]},root(8000000)).reason,'invalid-successor-face');
  console.log('P6_PROPERTY_FIT '+JSON.stringify({label,rows:fit.rows.length,counts:fit.counts,authority:'none'}));
+ const reshapes=result.parcelReshapes;
+ assert.equal(reshapes.status,'parcel-reshape-observed');assert.equal(reshapes.authority,'none');assert.equal(reshapes.landVerified,false);
+ assert.deepEqual(reshapes.rows.map(r=>r.id),fit.rows.map(r=>r.id));
+ for(const row of reshapes.rows){
+  const p=source.properties.find(x=>x.id===row.id);
+  for(const option of row.options){
+   const face=extraction.faces.find(x=>x.key===option.key);
+   assert.equal(option.frontageRoadId,p.frontageRoadId);assert.equal(option.authority,'none');
+   assert.deepEqual(option.plots.map(q=>q.id),p.plotIds);
+   assert.ok(shapeContained(option.boundary,face.polygon));
+   assert.ok(propertyFits(option.boundary,face.polygon,face.polygon.map((a,i)=>({a,b:face.polygon[(i+1)%face.polygon.length],road:extraction.graph.roadsById.get(face.roadIds[i])}))));
+   validatePlotTiling027(option.boundary,option.plots);
+   for(const building of source.buildings.filter(x=>x.propertyId===p.id))for(const region of building.geometry.regions)assert.ok(shapeContained(region.ring,option.boundary));
+   if(option.family==='world-preserved')assert.deepEqual(option.boundary,p.boundary);
+  }
+ }
+ assert.equal(Object.values(reshapes.counts).reduce((n,c)=>n+c,0),fit.rows.length);
+ assert.throws(()=>observeP6ParcelReshapes(source,extraction,fit,root(1)),LareBudgetExceeded);
+ console.log('P6_PARCEL_RESHAPES '+JSON.stringify({label,counts:reshapes.counts,attempts:reshapes.rows.reduce((n,r)=>n+r.attempts,0),authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -226,4 +248,24 @@ test('P6 block record semantic equality accepts key order only',()=>{
  assert.ok(!equalP6BlockRecord(a,{...c,data:{...c.data,a:[2,1]}},root(8000000)));
  assert.ok(!equalP6BlockRecord(a,{...c,extra:true},root(8000000)));
  assert.throws(()=>equalP6BlockRecord(a,c,root(1)),LareBudgetExceeded);
+});
+
+test('P6 bounded affine parcel candidates preserve plot IDs and refuse protected or fixed obstruction',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const p={id:'p',blockId:'old',plotIds:['q'],buildingIds:[],frontageRoadId:'r0',boundary:rect(10,2,20,12)};
+ const q={id:'q',propertyId:'p',blockId:'old',frontageRoadId:'r0',boundary:rect(10,2,20,12)};
+ stampRoadGenerated(p,[q]);
+ const face={kind:'block',key:'face',polygon:rect(0,0,60,40),roadIds:['r0','r1','r2','r3']};
+ const extraction={valid:true,faces:[face],graph:{roadsById:new Map(face.roadIds.map(id=>[id,{id,kind:'lane'}]))}};
+ const fit={status:'property-fit-observed',authority:'none',rows:[{id:'p',oldBlockId:'old',options:[{key:'face',originalFrontagePresent:true}]}]};
+ const source={properties:[p],plots:[q],buildings:[]};
+ const before=JSON.stringify(source),result=observeP6ParcelReshapes(source,extraction,fit,root(8000000));
+ assert.equal(result.rows[0].classification,'reshaped');
+ assert.ok(result.rows[0].options.every(o=>o.family==='positive-affine'&&o.plots[0].id==='q'));
+ assert.equal(JSON.stringify(source),before);
+ const protectedSource={...source,properties:[{...p,customName:'Keep'}]};
+ assert.equal(observeP6ParcelReshapes(protectedSource,extraction,fit,root(8000000)).rows[0].classification,'protected');
+ const fixed={...p,buildingIds:['b']};stampRoadGenerated(fixed,[q]);
+ const blocked={...source,properties:[fixed],buildings:[{id:'b',propertyId:'p',geometry:{regions:[{ring:rect(12,2.2,2,1)}]}}]};
+ assert.equal(observeP6ParcelReshapes(blocked,extraction,fit,root(8000000)).rows[0].classification,'noCandidate');
 });
