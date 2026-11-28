@@ -6,6 +6,14 @@ const permissions={mode:'restructure',intersection:true,split:true,merge:false,o
 for(const id of RADIAL_IDS.filter(id=>id!=='radial-small:eight-loop:50:y'))test('P5 residual radial read-only closure '+id,async()=>{
   const r=await observeP5Topology('g:'+id,permissions);
   console.log('ARES_P5_AB2 '+JSON.stringify(r));
+  // An omitted frontier reference must never be a locally admitted contact dependency.
+  const omitted=new Set(r.scope.omittedRefs.map(ref=>ref.collection+':'+ref.id));
+  assert.equal(omitted.size,r.scope.omittedRefs.length);
+  for(const c of r.conflicts.filter(c=>c.status==='research-contact-only')){
+    assert.ok(c.roadIds.every(id=>!omitted.has('roads:'+id)));
+    assert.ok(c.endpointIds.every(id=>!omitted.has('nodes:'+id)));
+    assert.ok(Object.isFrozen(c));assert.deepEqual(c.endpointExclusions,[]);
+  }
   assert.equal(r.authority,'none');assert.equal(r.topologyChanged,false);
   assert.ok(r.stats.work<=8000000);assert.ok(r.stats.expansions<=32768);
   assert.ok(r.scope.admittedCount<=10000);assert.ok(r.conflicts.length>0);
