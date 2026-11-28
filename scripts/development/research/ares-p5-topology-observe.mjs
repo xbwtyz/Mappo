@@ -1,3 +1,4 @@
+import {plazaExperimentCase,plazaExperimentSeed} from './ares-p5-holdout-plaza-experiment-lock.mjs';
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
 import {holdoutEBSeed} from './ares-p5-holdout-eb-lock.mjs';
@@ -22,7 +23,22 @@ export async function observeP5Topology(caseId,input){
   const budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
   return (await observeP5WithBudget(caseId,input,budget)).evidence;
 }
-async function observeP5WithBudget(caseId,input,budget){
+// Only actual plaza vertices with exclusively plaza-derived protection.
+function plazaStationaryEndpoints(city,positions,budget){
+ const allowed=new Set(city.plaza?.vertices??[]);
+ for(const road of city.roads){budget.spend();if(classifyRoad(road).reasons.some(x=>x!=='plaza')){allowed.delete(road.a);allowed.delete(road.b);}}
+ // Terminal corridors are excluded separately using the source graph.
+ for(const gate of city.gates??[]){budget.spend();allowed.delete(gate.connection?.cityNodeId);}
+ for(const k of ['waterFaces','terrainFaces'])for(const row of city[k]??[])for(const id of row.vertices??[]){budget.spend();allowed.delete(id);}
+ for(const id of positions.keys()){budget.spend();allowed.delete(id);}
+ return allowed;
+}
+export async function observeP5PlazaExperiment(caseId,arm){
+ plazaExperimentCase(caseId,arm);
+ const b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+ return (await observeP5WithBudget(caseId,HOLDOUT_SPLIT_PERMISSIONS,b,arm==='plaza-attached')).evidence;
+}
+async function observeP5WithBudget(caseId,input,budget,plazaException=false){
   const permissions=p5Permissions(input);
   if(typeof caseId!=='string')throw Error('Frozen RTRE recipe ID required.');
   const lock=lockedRtreCase(caseId);
@@ -38,6 +54,8 @@ async function observeP5WithBudget(caseId,input,budget){
   for(const e of report.entries){budget.spend();admitted.add(e.ref.collection+':'+e.ref.id);if(e.role==='protected-anchor'&&e.ref.collection==='nodes')fixed.add(e.ref.id);}
   for(const e of report.eligibleJunctions){budget.spend();eligible.add(e.ref.id);}
   for(const id of city.plaza?.vertices??[]){budget.spend();fixed.add(id);}
+  const plazaAllowed=plazaException?plazaStationaryEndpoints(city,positions,budget):new Set();
+  if(plazaException){const original=p5Graph(city,budget);for(const rid of original.terminalRoadIds){budget.spend();const road=original.roadsById.get(rid);plazaAllowed.delete(road.a);plazaAllowed.delete(road.b);}}
   const conflicts=[],other=[],seen=new Set();
   // P4 fresh eligibility already checks all mandatory roots and selected
   // incident closure; omitted frontier observations are NOT admitted.
@@ -68,7 +86,7 @@ async function observeP5WithBudget(caseId,input,budget){
     for(const id of new Set(ends)){
       budget.spend();
       if(!admitted.has('nodes:'+id))reasons.push('outside-scope-node:'+id);
-      if(fixed.has(id)||(!positions.has(id)&&!eligible.has(id)))reasons.push('unqualified-node:'+id);
+      if(!plazaAllowed.has(id)&&(fixed.has(id)||(!positions.has(id)&&!eligible.has(id))))reasons.push('unqualified-node:'+id);
       if(opaque(nodes.get(id),nodeFields,budget))reasons.push('opaque-node:'+id);
     }
     conflicts.push({roadIds:ids,endpointIds:ends,code:d.code,contact,reasons:[...new Set(reasons)].sort(riCompare),
@@ -119,13 +137,18 @@ export async function constructP5HoldoutCombinedSplit(caseId){
 export async function constructP5HoldoutPrecisionSplit(caseId){
  return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,holdoutPrecisionSeed(caseId));
 }
-async function constructSplit(caseId,input,combined){
+export async function constructP5PlazaExperiment(caseId,arm,precision=false){
+ plazaExperimentCase(caseId,arm);
+ const seed=precision?plazaExperimentSeed(caseId):null;
+ return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,seed,arm==='plaza-attached');
+}
+async function constructSplit(caseId,input,combined,plazaException=false){
   const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
   let sourceHash=null,attempts=0,translationEvidence=null;
   const finish=(status,reason,extra={})=>riFreeze({version:1,caseId,source:sourceHash,status,reason,attempts,
     authority:'none',independentlyVerified:false,...(translationEvidence?{translationEvidence}:{}),...extra,stats:budget.snapshot()});
   try{
-    const {evidence,f,source,report}=await observeP5WithBudget(caseId,permissions,budget);
+    const {evidence,f,source,report}=await observeP5WithBudget(caseId,permissions,budget,plazaException);
     sourceHash=evidence.source;
     if(!evidence.scope.mandatoryComplete||(!combined&&(evidence.other.length||!evidence.conflicts.length||
       evidence.conflicts.some(c=>c.status!=='research-contact-only'||c.contact.kind!=='interior-interior'))))
@@ -169,7 +192,9 @@ async function constructSplit(caseId,input,combined){
     const nodes=city.nodes.map(n=>{budget.spend();return requested.has(n.id)?{...n,...requested.get(n.id)}:{...n};});
     const byId=new Map(nodes.map(n=>[n.id,n])),roads=new Map(city.roads.map(r=>[r.id,r]));
     const used=new Set([...byId.keys(),...roads.keys()]);budget.spend(Math.max(1,used.size+admitted.size+requested.size));
-    const admissible=road=>[road.a,road.b].every(id=>admitted.has('nodes:'+id)&&!protectedNodes.has(id)&&!opaque(byId.get(id),nodeFields,budget))&&
+    const plazaAllowed=plazaException?plazaStationaryEndpoints(city,requested,budget):new Set();
+    for(const rid of terminal){budget.spend();const r=accepted.roadsById.get(rid);plazaAllowed.delete(r.a);plazaAllowed.delete(r.b);}
+    const admissible=road=>[road.a,road.b].every(id=>admitted.has('nodes:'+id)&&(!protectedNodes.has(id)||plazaAllowed.has(id))&&!opaque(byId.get(id),nodeFields,budget))&&
       admitted.has('roads:'+road.id)&&!classifyRoad(road).protected&&!terminal.has(road.id)&&!opaque(road,roadFields,budget);
     // Geometry-only changes may retain a stationary protected endpoint,
     // as in the qualified P4 verifier. Never move it, split its incident
@@ -207,7 +232,8 @@ async function constructSplit(caseId,input,combined){
       const keys=rows=>rows.map(x=>JSON.stringify([x.code,[...x.roadIds].sort(riCompare)])).sort(riCompare);
       budget.spend(Math.max(1,pairs.length*8));p5Sort(pairs.length,budget);
       if(replay.valid||pairs.some(p=>p.code!=='unnormalized-crossing'||p.roadIds.length!==2)||
-        aresReplayJson(keys(pairs),budget)!==aresReplayJson(keys(combined.seed.best.pairs),budget))
+        (combined.seed.best.pairs?aresReplayJson(keys(pairs),budget)!==aresReplayJson(keys(combined.seed.best.pairs),budget):
+          pairs.length!==combined.seed.best.expectedContactCount||!pairs.some(p=>aresReplayJson(p.roadIds,budget)===aresReplayJson(combined.seed.best.requiredPair,budget))))
         return finish('preflight-refused','frozen-conflict-replay-mismatch');
       conflicts=pairs.map(p=>{budget.spend(16);const [a,b]=p.roadIds.map(id=>roads.get(id));
         return {roadIds:p.roadIds,contact:classifyP5Contact(byId.get(a.a),byId.get(a.b),byId.get(b.a),byId.get(b.b))};});
@@ -218,7 +244,7 @@ async function constructSplit(caseId,input,combined){
     for(const c of conflicts){
       budget.spend(16);
       const [a,b]=c.roadIds.map(id=>roads.get(id));
-      if(!admissible(a)||!admissible(b)||(combined&&[a.a,a.b,b.a,b.b].some(id=>!requested.has(id)&&!eligible.has(id))))return finish('candidate-refused','split-road-closure');
+      if(!admissible(a)||!admissible(b)||(combined&&[a.a,a.b,b.a,b.b].some(id=>!requested.has(id)&&!eligible.has(id)&&!plazaAllowed.has(id))))return finish('candidate-refused','split-road-closure');
       const fresh=classifyP5Contact(byId.get(a.a),byId.get(a.b),byId.get(b.a),byId.get(b.b));
       if(fresh.kind!=='interior-interior'||aresReplayJson(fresh,budget)!==aresReplayJson(c.contact,budget))
         return finish('candidate-refused','contact-mismatch');

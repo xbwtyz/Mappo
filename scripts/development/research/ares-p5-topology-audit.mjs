@@ -1,3 +1,4 @@
+import {plazaExperimentCase,plazaExperimentSeed} from './ares-p5-holdout-plaza-experiment-lock.mjs';
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
 import {holdoutEBSeed} from './ares-p5-holdout-eb-lock.mjs';
@@ -79,7 +80,11 @@ export async function auditP5HoldoutCombinedSplit(caseId,evidence){
 export async function auditP5HoldoutPrecisionSplit(caseId,evidence){
  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,holdoutPrecisionSeed(caseId),true);
 }
-async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
+export async function auditP5PlazaExperiment(caseId,arm,evidence,precision=false){
+ plazaExperimentCase(caseId,arm);
+ return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,precision?plazaExperimentSeed(caseId):null,true,arm==='plaza-attached');
+}
+async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false){
   // No caller-supplied budget or scope, no search retry. This root is
   // independent evidence only, never a continuation of construction.
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
@@ -155,12 +160,27 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
     sortCharge(roads.length,b);
     const moved=new Set();
     for(const road of roads){b.spend();if(requested.has(road.a)||requested.has(road.b))moved.add(road.id);}
+    // Independently derive the narrowly excepted vertices. No construction
+    // helper or claimed anchor set is used. All other fixed reasons veto.
+    const square=new Set(city.plaza?.vertices??[]),exceptions=new Set();
+    if(plazaException)for(const id of square){
+      b.spend();if(requested.has(id)||!fixed.has(id)||!inScope('nodes',id)||!known(original.nodesById.get(id),nodeKeys,b))continue;
+      let allowed=true;
+      for(const rid of original.incidentRoads.get(id)){b.spend();const r=original.roadsById.get(rid);if(terminal.has(rid)||classifyRoad(r).reasons.some(x=>x!=='plaza'))allowed=false;}
+      for(const gate of city.gates??[]){b.spend();if(gate.connection?.cityNodeId===id)allowed=false;}
+      for(const k of ['waterFaces','terrainFaces'])for(const face of city[k]??[]){b.spend(face.vertices?.length??1);if(face.vertices?.includes(id))allowed=false;}
+      if(allowed)exceptions.add(id);
+    }
+    const usedExceptions=new Set();
     const scopeRoad=(road,split)=>{
       b.spend();
       need(inScope('roads',road.id)&&!classifyRoad(road).protected&&!terminal.has(road.id)&&known(road,roadKeys,b),'protected-or-unadmitted-road');
       for(const id of [road.a,road.b]){
         b.spend();need(inScope('nodes',id)&&known(original.nodesById.get(id),nodeKeys,b),'endpoint-scope');
-        if(split)need(!fixed.has(id)&&(requested.has(id)||qualified.has(id)),'split-protected-or-unqualified-endpoint');
+        if(split){
+          need((!fixed.has(id)&&(requested.has(id)||qualified.has(id)))||exceptions.has(id),'split-protected-or-unqualified-endpoint');
+          if(exceptions.has(id))usedExceptions.add(id);
+        }
       }
     };
     for(const id of moved)scopeRoad(byRoad.get(id),false);
@@ -188,7 +208,10 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
     }
     sortCharge(contacts.length,b);contacts.sort((a,c)=>riCompare(JSON.stringify(a.roadIds),JSON.stringify(c.roadIds)));
     result.contacts=contacts.length;need(contacts.length>0&&contacts.length===w.contacts.length,'contact-inventory');
-    if(combined){
+    if(combined&&!combined.seed.best.pairs){
+      need(contacts.length===combined.seed.best.expectedContactCount&&contacts.some(x=>eq(x.roadIds,combined.seed.best.requiredPair)),'frozen-precision-contact-inventory');
+    }
+    if(combined&&combined.seed.best.pairs){
       const expectedPairs=combined.seed.best.pairs.map(x=>{b.spend(4);return JSON.stringify([x.code,[...x.roadIds].sort(riCompare)]);}).sort(riCompare);
       const actualPairs=contacts.map(x=>{b.spend(4);return JSON.stringify(['unnormalized-crossing',x.roadIds]);}).sort(riCompare);
       need(eq(expectedPairs,actualPairs),'frozen-contact-inventory');
@@ -276,6 +299,16 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
     result.rotationDiagnostic={authority:'none',policy:combined||holdout?'required':'observation-only',checked,geometryChanged,splitChanged,finalChanged,changes};
     aresReplayJson(result.rotationDiagnostic,b);
     if(combined||holdout)need(finalChanged===0,'cyclic-parent-order-changed');
+    if(plazaException){
+      // Plaza geometry/edge records and original parent-bearing incidence
+      // must remain identical; existing frontage/access ownership is not
+      // certified by a road-only candidate.
+      for(const id of square){b.spend();need(equalP5GraphRecord(original.nodesById.get(id),rebuilt.nodesById.get(id),b),'plaza-vertex-changed');
+        need(equalOrder(cyclic(original,id,original.nodesById,noParents),cyclic(rebuilt,id,rebuilt.nodesById,parentByChild)),'plaza-parent-incidence-changed');}
+      let protectedRoads=0;
+      for(const r of roads){b.spend();if(!r.plaza)continue;protectedRoads++;need(!parts.has(r.id)&&equalP5GraphRecord(r,rebuilt.roadsById.get(r.id),b),'plaza-road-changed');}
+      result.plazaPreservation={vertices:square.size,protectedRoads,exceptedAnchors:[...usedExceptions].sort(riCompare),geometry:'unchanged',parentIncidence:'unchanged',landAccess:'not-verified'};
+    }
     const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);
