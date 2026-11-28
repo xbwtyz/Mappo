@@ -6,7 +6,7 @@ import {riCompare,riFreeze} from '../../../src/core/road-impact-model.js';
 const key=(c,id)=>JSON.stringify([c,id]);
 const land=['blocks','properties','plots','buildings','openSpaces'];
 const order=(a,b)=>riCompare(a,b);
-export function auditP6ExplicitInventory(city,w,observed,b){
+export function auditP6ExplicitInventory(city,w,observed,b,additionalLandRoots=[]){
  if(!b?.spend)throw Error('Shared P6 budget required.');
  const nodes=new Set(),roads=new Set(),pairs=new Set(),roots=new Set(),links=[];
  for(const n of w.requested){b.spend();nodes.add(n.ref.id);}
@@ -36,6 +36,7 @@ export function auditP6ExplicitInventory(city,w,observed,b){
   }
   if(c==='buildings')for(const occupant of row.geometry?.courtyardAccess?.occupants??[])connect(k,'buildings',occupant.buildingId);
  }
+ for(const r of additionalLandRoots){b.spend();const k=key(r.collection,r.id);if(!land.includes(r.collection)||!records.has(k))throw Error('Unknown A2 geometric seed.');roots.add(k);}
  for(const [a,c] of links){b.spend();if(!records.has(a)||!records.has(c))throw Error('Missing A2 ownership reference.');}
  // Fixed-point scans rather than the A1 graph traversal. Each pass reads
  // the previous frontier only, so depths are shortest ownership distances.
