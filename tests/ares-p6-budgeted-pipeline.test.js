@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6CooperativeParcels} from '../scripts/development/research/ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from '../scripts/development/research/ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from '../scripts/development/research/ares-p6-parcel-reshapes.mjs';
 import {stampRoadGenerated} from '../src/core/road-provenance.js';
@@ -61,7 +62,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,16);
+ assert.equal(result.ledger.length,17);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -218,6 +219,17 @@ function verify(source,candidate,legacy,extraction,label){
  for(const row of reshapes.rows)assert.equal(row.attempts,row.options.length+Object.values(row.rejections).reduce((n,v)=>n+v,0));
  assert.throws(()=>observeP6ParcelConflicts(source,reshapes,root(1)),LareBudgetExceeded);
  console.log('P6_PARCEL_CONFLICTS '+JSON.stringify({label,counts:conflicts.counts,authority:'none'}));
+ const cooperative=result.cooperativeParcels;
+ assert.equal(cooperative.status,'cooperative-parcels-observed');assert.equal(cooperative.authority,'none');assert.equal(cooperative.landVerified,false);
+ assert.deepEqual(cooperative.unresolved,reshapes.rows.filter(r=>!r.options.length).map(r=>r.id).sort());
+ if(cooperative.selection==='compatible-candidate-bearing-subset'){
+  assert.equal(cooperative.selected.length,reshapes.rows.filter(r=>r.options.length).length);
+  const chosen=new Set(cooperative.selected.map(r=>JSON.stringify([r.id,r.index])));
+  for(const row of conflicts.rows)if(chosen.has(JSON.stringify([row.id,row.index])))assert.ok(!row.fixedHits.length&&!row.unresolvedHits.length);
+  for(const pair of conflicts.pairs)assert.ok(!chosen.has(JSON.stringify(pair.a))||!chosen.has(JSON.stringify(pair.b)));
+ }else assert.equal(cooperative.selected.length,0);
+ assert.throws(()=>observeP6CooperativeParcels(reshapes,conflicts,root(1)),LareBudgetExceeded);
+ console.log('P6_COOPERATIVE_PARCELS '+JSON.stringify({label,selection:cooperative.selection,selected:cooperative.selected.length,unresolved:cooperative.unresolved.length,reason:cooperative.reason,attempts:cooperative.attempts,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -297,4 +309,30 @@ test('P6 candidate compatibility distinguishes fixed, unresolved, and alternativ
  assert.equal(result.counts.fixedBlocked,1);assert.equal(result.counts.unresolvedContact,1);
  assert.equal(result.selection,'not-performed');assert.equal(JSON.stringify([source,reshapes]),before);
  assert.equal(observeP6ParcelConflicts(source,{...reshapes,rows:[...reshapes.rows,reshapes.rows[0]]},root(8000000)).reason,'invalid-candidate-census');
+});
+
+test('P6 cooperative parcel selection backtracks without dropping any candidate-bearing owner',()=>{
+ const option=family=>({key:'face',family,authority:'none'});
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[
+  {id:'a',options:[option('world-preserved'),option('positive-affine')]},
+  {id:'b',options:[option('world-preserved'),option('positive-affine')]},
+  {id:'u',options:[]}]};
+ const conflicts={status:'parcel-conflicts-observed',authority:'none',unknown:[],rows:[
+  {id:'a',index:0,key:'face',fixedHits:[],unresolvedHits:[]},
+  {id:'a',index:1,key:'face',fixedHits:[],unresolvedHits:[]},
+  {id:'b',index:0,key:'face',fixedHits:[],unresolvedHits:[]},
+  {id:'b',index:1,key:'face',fixedHits:[],unresolvedHits:[]}],
+  pairs:[{a:['a',0],b:['b',0]},{a:['a',0],b:['b',1]}]};
+ const before=JSON.stringify([reshapes,conflicts]);
+ const result=observeP6CooperativeParcels(reshapes,conflicts,root(8000000));
+ assert.deepEqual(result.selected.map(r=>[r.id,r.index]),[['a',1],['b',0]]);
+ assert.deepEqual(result.unresolved,['u']);assert.equal(result.allObservedOwnersCovered,false);
+ assert.ok(result.attempts>2);assert.equal(JSON.stringify([reshapes,conflicts]),before);
+ const impossible={...conflicts,pairs:[...conflicts.pairs,{a:['a',1],b:['b',0]},{a:['a',1],b:['b',1]}]};
+ const refusal=observeP6CooperativeParcels(reshapes,impossible,root(8000000));
+ assert.equal(refusal.reason,'no-compatible-combination');assert.deepEqual(refusal.selected,[]);
+ const blocked={...conflicts,rows:conflicts.rows.map(r=>r.id==='a'?{...r,unresolvedHits:['u']}:r)};
+ assert.equal(observeP6CooperativeParcels(reshapes,blocked,root(8000000)).reason,'blocked-owner');
+ assert.equal(observeP6CooperativeParcels(reshapes,{...conflicts,unknown:[{id:'z'}]},root(8000000)).reason,'unknown-context');
+ assert.equal(observeP6CooperativeParcels(reshapes,{...conflicts,rows:conflicts.rows.slice(1)},root(8000000)).reason,'missing-compatibility-row');
 });

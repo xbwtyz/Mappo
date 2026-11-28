@@ -99,6 +99,13 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    for(const key of Object.keys(rejections)){rejections[key]+=row.rejections[key];if(row.classification==='noCandidate')unresolvedRejections[key]+=row.rejections[key];}
   }
   console.log('P6_LOCKED_PARCEL_CONFLICTS '+JSON.stringify({id,counts:conflicts.counts,rejections,unresolvedRejections,authority:'none'}));
+  const cooperative=r.pipeline.cooperativeParcels;
+  assert.equal(cooperative.status,'cooperative-parcels-observed');
+  assert.equal(cooperative.authority,'none');assert.equal(cooperative.landVerified,false);
+  assert.equal(cooperative.selected.length,32);assert.equal(cooperative.unresolved.length,28);
+  assert.equal(cooperative.allObservedOwnersCovered,false);
+  assert.equal(cooperative.selection,'compatible-candidate-bearing-subset');
+  console.log('P6_LOCKED_COOPERATIVE_PARCELS '+JSON.stringify({id,selected:cooperative.selected.length,unresolved:cooperative.unresolved.length,attempts:cooperative.attempts,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
