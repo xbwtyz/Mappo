@@ -1,3 +1,4 @@
+import {observeP6GeometricImpact} from './ares-p6-geometric-impact.mjs';
 import {auditP6ExplicitInventory} from './ares-p6-inventory-audit.mjs';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
@@ -111,7 +112,9 @@ export async function observeP6Ownership(id){
   aresReplayJson(observation,b);
   const inventoryAudit=limited?{status:'scope-limit',authority:'none'}:auditP6ExplicitInventory(city,w,observation,b);
   aresReplayJson(inventoryAudit,b);
+  const geometricImpact=inventoryAudit.status==='matched'?observeP6GeometricImpact(city,w,observation,b):null;
+  aresReplayJson(geometricImpact,b);
   if(aresReplayJson(f.project,b)!==before)throw Error('P6 source mutated.');
-  return finish(limited||omitted.length?'scope-incomplete':inventoryAudit.status!=='matched'?'inventory-unverified':'observed',{observation,inventoryAudit});
+  return finish(limited||omitted.length?'scope-incomplete':inventoryAudit.status!=='matched'?'inventory-unverified':'observed',{observation,inventoryAudit,geometricImpact});
  }catch(e){if(e instanceof LareBudgetExceeded)return finish('work-limit',{reason:e.resource});throw e;}
 }
