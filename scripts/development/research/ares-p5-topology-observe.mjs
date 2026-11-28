@@ -1,3 +1,4 @@
+import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {plazaExperimentCase,plazaExperimentSeed} from './ares-p5-holdout-plaza-experiment-lock.mjs';
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
@@ -145,8 +146,8 @@ export async function constructP5PlazaExperiment(caseId,arm,precision=false){
 // Detached coordinated search only. The caller's existing root charges construction;
 // this is not an authority token or a live editing API.
 export async function constructP5CoordinatedCandidate(caseId,neighbors,pairs,budget){
- plazaExperimentCase(caseId,'plaza-attached');
- return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,{recipe:{source:holdoutLockedRow(caseId).source,cap:8},seed:{arm:'coordinated',best:{neighbors,pairs}}},true,budget,true);
+ const row=typeof caseId==='string'&&caseId.startsWith('t:')?tournamentLockedRow(caseId):(plazaExperimentCase(caseId,'plaza-attached'),holdoutLockedRow(caseId));
+ return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,{recipe:{source:row.source,cap:8},seed:{arm:'coordinated',best:{neighbors,pairs}}},true,budget,true);
 }
 async function constructSplit(caseId,input,combined,plazaException=false,sharedBudget=null,coordinated=false){
   const permissions=p5Permissions(input),budget=sharedBudget??createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});

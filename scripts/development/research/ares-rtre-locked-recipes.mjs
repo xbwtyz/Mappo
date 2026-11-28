@@ -1,3 +1,6 @@
+import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
+import {tournamentRtreLock} from './ares-p5-tournament-lock.mjs';
+import {materializeTournamentCity} from './ares-p5-tournament-inventory.mjs';
 import {holdoutRtreLock} from './ares-p5-holdout-lock.mjs';
 import {materializeHoldoutCity} from './ares-p5-holdout-inventory.mjs';
 import { readFileSync } from 'node:fs';
@@ -18,6 +21,7 @@ export function lockedRtreCase(id){
   const old=original.rows.find(r=>r.id===id);
   if(old)return old;
   if(id.startsWith('h:'))return holdoutRtreLock(id);
+  if(id.startsWith('t:'))return tournamentRtreLock(id);
   const slot=slots.get(id);
   if(!slot)throw Error('Unknown frozen RTRE recipe.');
   const city=inventory.rows.find(r=>r.id===slot.city),group=city?.groups.find(g=>g.id===slot.group);
@@ -27,7 +31,7 @@ export function lockedRtreCase(id){
 export function materializeLockedRtreCase(id){
   const lock=lockedRtreCase(id);
   if(!lock.slot)return materializeAresP3Case(id);
-  const project=lock.holdout?materializeHoldoutCity(lock.slot.city):materializeGCorpusCity(lock.slot.city);
+  const project=lock.tournament?materializeTournamentCity(lock.slot.city):lock.holdout?materializeHoldoutCity(lock.slot.city):materializeGCorpusCity(lock.slot.city);
   const operation=normalizeSpatialRoadGroup(project,1,[...lock.selectedRoadIds],lock.slot.offset,G_MANIFEST.permissions);
   if(aresReplayJson(operation.editedRefs.map(r=>r.id))!==aresReplayJson(lock.selectedRoadIds)||
      operation.editedRefs.some(r=>r.collection!=='roads')||

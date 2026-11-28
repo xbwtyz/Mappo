@@ -1,3 +1,4 @@
+import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {plazaExperimentCase,plazaExperimentSeed} from './ares-p5-holdout-plaza-experiment-lock.mjs';
 import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {holdoutPrecisionSeed} from './ares-p5-holdout-precision-audit-lock.mjs';
@@ -87,7 +88,7 @@ export async function auditP5PlazaExperiment(caseId,arm,evidence,precision=false
 // Independent replay: coordinates are untrusted claims. No search feedback,
 // no caller budget or permission, no reliance on the search contact inventory.
 export async function auditP5CoordinatedCandidate(caseId,evidence){
- plazaExperimentCase(caseId,'plaza-attached');
+ if(typeof caseId==='string'&&caseId.startsWith('t:'))tournamentLockedRow(caseId);else plazaExperimentCase(caseId,'plaza-attached');
  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,null,true,true,true);
 }
 async function auditSplit(caseId,permissions,evidence,combined,holdout=false,plazaException=false,coordinated=false){

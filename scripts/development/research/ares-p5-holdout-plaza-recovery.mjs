@@ -1,3 +1,4 @@
+import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {createHash} from 'node:crypto';
 import {plazaExperimentCase,PLAZA_EXPERIMENT_CASES} from './ares-p5-holdout-plaza-experiment-lock.mjs';
 import {holdoutLockedRow} from './ares-p5-holdout-lock.mjs';
@@ -35,12 +36,32 @@ export function samePlazaRecoveryOrder(a,c){if(a.length!==c.length)return false;
 // Source-bound detached preparation for the subsequent coordinated solver.
 // No caller project, coordinates, writable list, or permission token.
 // The single shared root belongs to the fixed experimental entry point.
-async function prepare(caseId,b){
- const prior=plazaExperimentCase(caseId,'strict'),lock=holdoutLockedRow(caseId),f=materializeLockedRtreCase(caseId);
+async function prepare(caseId,b,tournament=false){
+ const prior=tournament?tournamentLockedRow(caseId):plazaExperimentCase(caseId,'strict'),lock=tournament?prior:holdoutLockedRow(caseId),f=materializeLockedRtreCase(caseId);
  const before=aresReplayJson(f.project,b),bytes=Buffer.from(before,'utf8');b.spend(Math.max(1,Math.ceil(bytes.length/64)));
  if(createHash('sha256').update(bytes).digest('hex')!==lock.source)throw Error('Plaza recovery source mismatch.');
  const city=f.project.city,report=await inspectFreshRtreNeighborhood(caseId,{mode:'adaptive',maxObjects:10000,maxHops:6},b);
- if(report.snapshotFingerprint!==lock.source||!['research-eligible','no-eligible-neighbors'].includes(report.status))throw Error('Admitted plaza recovery scope changed.');
+ if(report.snapshotFingerprint!==lock.source)throw Error('Admitted plaza recovery source changed.');
+ if(tournament){
+  // Independently reconstruct the exact selected vertices and check the
+  // immutable outline, not a search outcome or claimed refusal.
+  const selected=new Set(lock.selectedRoadIds),nodes=new Map(city.nodes.map(n=>[n.id,n])),ends=new Set();
+  b.spend(Math.max(1,city.nodes.length));
+  for(const road of city.roads){b.spend();if(selected.has(road.id)){ends.add(road.a);ends.add(road.b);}}
+  const outside=[],requested=new Map();
+  for(const id of ends){b.spend(4+city.survey.boundary.length);const n=nodes.get(id),p={x:lock.offset.x===0?n.x:n.x+lock.offset.x,y:lock.offset.y===0?n.y:n.y+lock.offset.y};requested.set(id,p);if(!insideOrOn(p,city.survey.boundary))outside.push(id);}
+  if(outside.length){
+   const observed=new Map(report.requested.map(n=>[n.ref.id,n.point]));
+   const agreement=observed.size===requested.size&&[...requested].every(([id,p])=>{b.spend();return Object.is(p.x,observed.get(id)?.x)&&Object.is(p.y,observed.get(id)?.y);})&&report.geometryDiagnostics.some(d=>d.code==='boundary-escape');
+   if(aresReplayJson(f.project,b)!==before)throw Error('Tournament preflight mutated source.');
+   return {early:agreement?'boundary-refused':'preflight-refused',reason:agreement?'fixed-boundary':'boundary-observer-disagreement',preflight:{status:report.status,outside:sort(outside),diagnostics:report.geometryDiagnostics.map(d=>({code:d.code,reason:d.reason}))}};
+  }
+  if(!['research-eligible','no-eligible-neighbors'].includes(report.status)){
+   if(aresReplayJson(f.project,b)!==before)throw Error('Tournament preflight mutated source.');
+   return {early:'preflight-refused',reason:report.status,preflight:{status:report.status,outside:[],diagnostics:report.geometryDiagnostics.map(d=>({code:d.code,reason:d.reason}))}};
+  }
+ }
+ if(!['research-eligible','no-eligible-neighbors'].includes(report.status))throw Error('Admitted plaza recovery scope changed.');
  const g=graph(city,b);if(!g.valid)throw Error('Invalid source graph.');
  const positions=new Map(report.requested.map(x=>[x.ref.id,x.point])),eligible=new Set(report.eligibleJunctions.map(x=>x.ref.id)),admitted=new Set(report.entries.map(x=>x.ref.collection+':'+x.ref.id));
  const fixed=new Set(city.plaza?.vertices??[]),exceptions=new Set(fixed),terminal=new Set(g.terminalRoadIds);
@@ -93,12 +114,15 @@ export async function diagnosePlazaRecovery(caseId){
 export async function searchCoordinatedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,false);}
 export async function searchDiversifiedPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true);}
 export async function searchResidualPlazaRecovery(caseId){return coordinatedPlazaSearch(caseId,true,true);}
-async function coordinatedPlazaSearch(caseId,diversified,residual=false){
- const prior=plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
+export async function searchTournamentPlazaRecovery(caseId){tournamentLockedRow(caseId);return coordinatedPlazaSearch(caseId,true,false,true);}
+async function coordinatedPlazaSearch(caseId,diversified,residual=false,tournament=false){
+ const prior=tournament?tournamentLockedRow(caseId):plazaExperimentCase(caseId,'plaza-attached'),b=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});
  const base={caseId,source:prior.source,authority:'none',attempts:0,localProbes:0,minimum:null,best:null,construction:null,audit:null};
  const finish=(status,reason=null)=>riFreeze({...base,status,reason,stats:b.snapshot()});
  try{
-  const x=await prepare(caseId,b),{g,positions,city,orders,writable}=x,offset=x.lock.offset,limit=Math.hypot(offset.x,offset.y);
+  const x=await prepare(caseId,b,tournament);
+  if(x.early){base.preflight=x.preflight;return finish(x.early,x.reason);}
+  const {g,positions,city,orders,writable}=x,offset=x.lock.offset,limit=Math.hypot(offset.x,offset.y);
   if(!x.selectedClosure)return finish('refused','selected-closure');
   const mandatory=x.mandatoryFor('plaza-attached'),clauses=[...mandatory.map(p=>p.movable),...x.rotation.map(r=>r.eligible)];
   const minimum=measureConnectedMinimum(clauses,x.adj,b);base.minimum=minimum;
