@@ -26,6 +26,8 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.equal(r.pipeline.blockPlan.status,'block-plan-observed');
   assert.equal(r.pipeline.blockOwnership.status,'block-ownership-observed');
   assert.equal(r.pipeline.blockOwnership.authority,'none');
+  assert.equal(r.pipeline.blockLabels.status,'block-label-preview-observed');
+  assert.equal(r.pipeline.blockLabels.authority,'none');
   assert.equal(r.pipeline.districts.passed,true);
   assert.equal(r.pipeline.defenses.passed,true);
  }

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createProject} from '../src/core/city-model.js';
-import {normalizeRoadCrossingsC3,draftRoadConnectionC3} from '../src/core/road-crossings.js';
+import {normalizeRoadCrossingsC3,draftRoadConnectionC3,roadTopologyId} from '../src/core/road-crossings.js';
 import {prepareJunctionIntentC7} from '../src/core/road-intent-c1.js';
 import {extractRoadFaces,matchExistingFaces} from '../src/core/road-faces.js';
 import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {previewP6BlockLabels} from '../scripts/development/research/ares-p6-block-label-preview.mjs';
 import {observeP6BlockOwnership} from '../scripts/development/research/ares-p6-block-ownership.mjs';
 import {planP6BlockRecords,equalP6BlockRecord} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
 import {observeP6DryPipeline} from '../scripts/development/research/ares-p6-budgeted-pipeline.mjs';
@@ -51,7 +52,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,10);
+ assert.equal(result.ledger.length,11);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -85,6 +86,32 @@ function verify(source,candidate,legacy,extraction,label){
  assert.equal(observeP6BlockOwnership({...source,properties:[...source.properties,{id:'invalid-test-reference',blockId:'absent'}]},plan,root(8000000)).reason,'invalid-land-reference');
  assert.throws(()=>observeP6BlockOwnership(source,plan,root(1)),LareBudgetExceeded);
  console.log('P6_BLOCK_OWNERSHIP '+JSON.stringify({label,retained:ownership.retained,pendingOld:ownership.pendingOld,pendingFaces:ownership.pendingFaces.length,minimumNewIds:ownership.minimumNewIds,minimumRetirements:ownership.minimumRetirements,references:ownership.ledger.reduce((n,r)=>n+r.references.length,0),authority:'none'}));
+ const preview=result.blockLabels;
+ assert.equal(preview.status,'block-label-preview-observed');assert.equal(preview.authority,'none');
+ assert.equal(preview.valid,false);assert.equal(preview.landVerified,false);
+ assert.equal(preview.allocation,'not-performed');assert.equal(preview.retirement,'not-authorized');
+ const usedLabels=new Set([source.plaza.id,...source.blocks.map(r=>r.id),...(source.waterFaces??[]).map(r=>r.id),...(source.terrainFaces??[]).map(r=>r.id)]);
+ const expectedLabels=new Map([...legacy.preserved,...legacy.changed].filter(r=>r.kind==='block').map(r=>[r.candidateKey,r.id]));
+ for(const g of [...legacy.split,...legacy.merged,...legacy.ambiguous])for(const k of g.candidateKeys)
+  expectedLabels.set(k,g.oldIds.length===1&&g.candidateKeys.length===1?g.oldIds[0]:roadTopologyId('BLK-X',k,usedLabels));
+ assert.deepEqual(preview.rows.map(r=>[r.key,r.label]),[...expectedLabels].sort(([a],[b])=>a<b?-1:a>b?1:0));
+ assert.equal(new Set(preview.rows.map(r=>r.label)).size,preview.rows.length);
+ assert.deepEqual(preview.reverse.map(r=>({oldId:r.oldId,successorLabels:r.successorLabels})),old.reverse.map(r=>({oldId:r.oldId,successorLabels:r.candidateKeys.map(k=>expectedLabels.get(k))})));
+ assert.equal(preview.historicalNonreuse,'not-established');
+ assert.throws(()=>previewP6BlockLabels(source,plan,ownership,result.identity,result.lineage,root(1)),LareBudgetExceeded);
+ if(plan.structural){
+  const k=preview.rows.find(r=>r.kind==='new-label-preview').key;
+  const id=expectedLabels.get(k);
+  const collision={...source,waterFaces:[...(source.waterFaces??[]),{id}]};
+  const collided=previewP6BlockLabels(collision,plan,ownership,result.identity,result.lineage,root(8000000));
+  assert.equal(collided.status,'block-label-preview-observed');
+  assert.ok(collided.rows.find(r=>r.key===k).label!==id);
+  const predecessor=preview.rows.find(r=>r.key===k).predecessorIds[0];
+  const opaque={...source,blocks:source.blocks.map(r=>r.id===predecessor?{...r,ownerNote:'keep'}:r)};
+  const flagged=previewP6BlockLabels(opaque,plan,ownership,result.identity,result.lineage,root(8000000));
+  assert.ok(flagged.rows.find(r=>r.key===k).blockers.includes('opaque-predecessor'));
+ }
+ console.log('P6_BLOCK_LABEL_PREVIEW '+JSON.stringify({label,newLabels:preview.newLabels,potentialRetirements:preview.potentialRetirements,blockedChoices:preview.blockedChoices,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
