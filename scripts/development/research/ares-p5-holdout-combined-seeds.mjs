@@ -7,6 +7,7 @@ import {combinedCoverTrial,pairsFor} from './ares-p4x-hybrid.mjs';
 import {analyticalTrials} from './ares-p4x-analytical.mjs';
 import {rotationCoverGroups,rotationTriplets,projectRotation} from './ares-p5-holdout-rotation.mjs';
 import {measureConnectedMinimum,projectCyclic} from './ares-p5-holdout-cyclic.mjs';
+import {angularLineProposals,localAngularLines} from './ares-p5-holdout-local-angular.mjs';
 import {classifyP5Contact,P5_LIMITS} from './ares-p5-topology-contract.mjs';
 import {iterateRoadGraph,classifyRoad} from '../../../src/core/road-graph.js';
 import {insideOrOn} from '../../../src/core/boundary.js';
@@ -28,6 +29,18 @@ for(const job of jobs){
 if(archive.size!==29)throw Error('Incomplete cluster archive.');
 export const COMBINED_CASES=Object.freeze([...archive.values()].filter(r=>r.arms.optimisticSplit.connected.status==='within-four').map(r=>r.caseId).sort(riCompare));
 if(COMBINED_CASES.length!==11)throw Error('Combined cohort changed.');
+const cyclicArchive=new Map();
+function readCyclicArchive(){
+ if(cyclicArchive.size===11)return cyclicArchive;
+ for(const job of [140852546473,140852546475,140852546493,140852546497,140852546500,140852546538,140852546541,140852546547]){
+  const e=JSON.parse(readFileSync(new URL('../../../docs/research/evidence/holdout-cyclic-46103970615-'+job+'.json',import.meta.url),'utf8'));
+  if(e.run!==46103970615||e.attempt!==1||e.source!=='9196399817f64c065f5a2957ed573a12b13d023c'||e.job!==job)throw Error('Cyclic archive identity changed.');
+  for(const r of e.rows){const lock=holdoutLockedRow(r.caseId);if(cyclicArchive.has(r.caseId)||!COMBINED_CASES.includes(r.caseId)||r.source!==lock.source||r.authority!=='none'||JSON.stringify(r.offset)!==JSON.stringify(lock.offset)||r.seeds.length)throw Error('Cyclic archive mismatch.');cyclicArchive.set(r.caseId,riFreeze(r));}
+ }
+ if(cyclicArchive.size!==11)throw Error('Incomplete cyclic archive.');
+ return cyclicArchive;
+}
+export const LOCAL_ANGULAR_CASES=Object.freeze(["h:linear-10","h:linear-25","h:organic-10","h:planned-10","h:radial-24"]);
 const rotationArchive=new Map();
 function readRotationArchive(){
  if(rotationArchive.size===11)return rotationArchive;
@@ -61,9 +74,11 @@ function cyclicEqual(a,c){if(a.length!==c.length)return false;if(!a.length)retur
 export async function searchHoldoutCombinedSeeds(caseId){return searchCombined(caseId,false);}
 export async function searchHoldoutRotationSeeds(caseId){return searchCombined(caseId,true);}
 export async function searchHoldoutCyclicSeeds(caseId){return searchCombined(caseId,true,true);}
-async function searchCombined(caseId,rotationAware,cyclicAware=false){
+export async function searchHoldoutLocalAngular(caseId){return searchCombined(caseId,true,true,true);}
+async function searchCombined(caseId,rotationAware,cyclicAware=false,localAware=false){
  const lock=holdoutLockedRow(caseId);
  if(!COMBINED_CASES.includes(caseId))throw Error('Frozen combined holdout case required.');
+ if(localAware&&!LOCAL_ANGULAR_CASES.includes(caseId))throw Error('Frozen local angular case required.');
  const r=archive.get(caseId),b=root(),base={caseId,source:lock.source,morphology:lock.options.morphology,offset:lock.offset,authority:'none',attempts:0,rotationRefused:0,scopeRefused:0,contactRefused:0,duplicates:0,geometryOnly:0,seeds:[],best:null};
  let f,before;
  const finish=(category,reason=null)=>riFreeze({...base,category,reason,stats:b.snapshot()});
@@ -143,6 +158,65 @@ async function searchCombined(caseId,rotationAware,cyclicAware=false){
    for(const id of [...writable].sort(riCompare)){const q=[id],seen=new Set(q),next=new Set();for(const n of q)for(const v of g.adjacency.get(n)){b.spend();if(positions.has(v)&&!seen.has(v)){seen.add(v);q.push(v);}else if(v!==id&&writable.has(v))next.add(v);}adj.set(id,[...next].sort(riCompare));}
    const cover=base.earlyScope.selectedClosure.length?{status:'selected-closure-held',groups:[],states:0}:rotationCoverGroups([...mandatoryClauses,...rotationClauses.map(c=>c.eligible)],adj,b);
    base.rotationCover={status:cover.status,groups:cover.groups,states:cover.states,limited:cover.limited??false,emptyMandatory:mandatoryClauses.filter(c=>!c.length).length,emptyRotation:rotationClauses.filter(c=>!c.eligible.length).length};
+   if(localAware){
+    base.strategy='local-angular';base.localProbes=0;base.localScope={outside:0,unchanged:0,displacement:0};base.geometrySeeds=[];
+    const historical=readCyclicArchive().get(caseId),previous=readRotationArchive().get(caseId);
+    if(historical.category!=='no-split-seed'||!cover.groups.length||JSON.stringify(historical.baselineRotation)!==JSON.stringify(rotationClauses))throw Error('Local angular cohort mismatch.');
+    const limit=Math.hypot(lock.offset.x,lock.offset.y),seeds=[historical.bestRotation,previous.bestRotation].filter(Boolean),starts=[],keys=new Set();
+    for(const seed of seeds){
+     const group=seed.neighbors.map(n=>n.id).sort(riCompare),key=JSON.stringify(seed.neighbors);
+     if(keys.has(key))continue;keys.add(key);
+     if(!cover.groups.some(g=>JSON.stringify(g)===JSON.stringify(group)))throw Error('Residual cluster changed.');
+     const points=new Map();for(const n of seed.neighbors){b.spend(8);const old=g.nodesById.get(n.id);if(!old||old.x!==n.old.x||old.y!==n.old.y||!Number.isFinite(n.point.x)||!Number.isFinite(n.point.y)||Math.hypot(n.point.x-old.x,n.point.y-old.y)>limit)throw Error('Residual coordinate changed.');points.set(n.id,n.point);}
+     starts.push({group,points,changed:seed.ids});
+    }
+    function changes(group,points){
+     const pos=new Map([...positions,...points]),affected=new Set([...pos.keys()]);
+     for(const id of pos.keys())for(const v of g.adjacency.get(id)){b.spend();affected.add(v);}
+     const changed=[];for(const id of affected){b.spend();if(!cyclicEqual(oldOrders.get(id),order(g,id,pos,b)))changed.push(id);}
+     return changed.sort(riCompare);
+    }
+    function admissible(id,p){
+     const old=g.nodesById.get(id);b.spend(city.survey.boundary.length+4);
+     if(p.x===old.x&&p.y===old.y){base.localScope.unchanged++;return false;}
+     if(Math.hypot(p.x-old.x,p.y-old.y)>limit){base.localScope.displacement++;return false;}
+     if(!insideOrOn(p,city.survey.boundary)){base.localScope.outside++;return false;}
+     return true;
+    }
+    // Interleave the historical near misses; each local proposal uses only
+    // one existing group variable, all selected endpoints stay exact.
+    const candidateKeys=new Set(),queue=[...starts];
+    for(let round=0;round<8&&queue.length&&base.attempts<48&&base.localProbes<192&&base.seeds.length<2;round++){
+     const current=queue.shift(),{group,points}=current,changed=changes(group,points);
+     const variables=group.filter(v=>changed.some(id=>v===id||[...g.adjacency.get(id)].includes(v)));
+     const ranked=[],streams=variables.map(id=>({id,it:angularLineProposals(points.get(id),g.nodesById.get(id),limit,localAngularLines(g,positions,points,changed,id,b),b)}));
+     let exhausted=false;
+     // Round-robin across variables to avoid a single high-degree star
+     // monopolizing the bounded proposal count.
+     for(let i=0;i<48&&!exhausted&&base.localProbes<192;i++){
+      exhausted=true;
+      for(const stream of streams){
+       if(base.localProbes>=192)break;const p=stream.it.next();if(p.done)continue;exhausted=false;b.expand();base.localProbes++;
+       if(!admissible(stream.id,p.value))continue;
+       const next=new Map(points);next.set(stream.id,p.value);
+       const key=JSON.stringify(group.map(id=>next.get(id)));if(candidateKeys.has(key))continue;candidateKeys.add(key);
+       const delta=changes(group,next);if(delta.length>changed.length)continue;
+       ranked.push({group,points:next,changed:delta,move:Math.hypot(p.value.x-points.get(stream.id).x,p.value.y-points.get(stream.id).y)});
+      }
+      if(ranked.length>=16)break;
+     }
+     ranked.sort((a,c)=>a.changed.length-c.changed.length||a.move-c.move);
+     for(const trial of ranked.slice(0,6)){
+      if(base.attempts>=48||base.seeds.length>=2)break;
+      const item=evaluate(trial.group,trial.points,'local-angular-event');
+      if(item&&item.score===0&&base.geometrySeeds.length<2)base.geometrySeeds.push({neighbors:trial.group.map(id=>({id,old:point(g.nodesById.get(id)),point:point(trial.points.get(id))})),attempt:base.attempts});
+      if(item&&trial.changed.length<changed.length)queue.push(trial);
+     }
+    }
+    if(aresReplayJson(f.project,b)!==before)throw Error('Local angular search mutated source.');
+    aresReplayJson(base,b);
+    return finish(base.seeds.length?'split-seeds-found':base.geometrySeeds.length?'geometry-seeds-found':'no-split-seed');
+   }
    if(cyclicAware){
     base.strategy='cyclic-aware';
     const historical=readRotationArchive().get(caseId);
