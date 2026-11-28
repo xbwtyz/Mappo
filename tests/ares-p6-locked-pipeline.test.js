@@ -129,6 +129,15 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    }
   }
   console.log('P6_LOCKED_SAME_FRONTAGE_ACCESS '+JSON.stringify({id,counts:access.counts,unknown:access.unknown.length,authority:'none'}));
+  const alternatives=r.pipeline.alternativeFrontages;
+  assert.equal(alternatives.status,'alternative-frontage-observed');assert.equal(alternatives.permission,'not-granted');
+  assert.equal(alternatives.rows.length,fitRows.size);
+  for(const row of alternatives.rows)for(const option of row.options){
+   const face=rawFaces.get(option.key),i=face.roadIds.indexOf(row.originalFrontage),m=face.roadIds.length;
+   assert.ok(i>=0&&[(i+m-1)%m,(i+1)%m].includes(option.edgeIndex));assert.equal(option.roadId,face.roadIds[option.edgeIndex]);
+   assert.equal(option.authority,'none');
+  }
+  console.log('P6_LOCKED_ALTERNATIVE_FRONTAGES '+JSON.stringify({id,counts:alternatives.counts,options:alternatives.rows.reduce((n,r)=>n+r.options.length,0),authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);

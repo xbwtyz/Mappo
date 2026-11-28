@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6AlternativeFrontages} from '../scripts/development/research/ares-p6-alternative-frontages.mjs';
 import {observeP6SameFrontageAccess} from '../scripts/development/research/ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from '../scripts/development/research/ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from '../scripts/development/research/ares-p6-parcel-conflicts.mjs';
@@ -63,7 +64,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,18);
+ assert.equal(result.ledger.length,19);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -239,6 +240,16 @@ function verify(source,candidate,legacy,extraction,label){
  for(const row of access.rows)if(row.route){const building=source.buildings.find(b=>b.id===row.id);assert.deepEqual(row.route.entrance,building.entrance);assert.equal(row.route.frontageRoadId,building.frontageRoadId);if(row.classification==='retained')assert.deepEqual(row.route.accessPath,building.accessPath);}
  assert.throws(()=>observeP6SameFrontageAccess(source,extraction,reshapes,cooperative,root(1)),LareBudgetExceeded);
  console.log('P6_SAME_FRONTAGE_ACCESS '+JSON.stringify({label,counts:access.counts,unknown:access.unknown.length,authority:'none'}));
+ const alternatives=result.alternativeFrontages;
+ assert.equal(alternatives.status,'alternative-frontage-observed');assert.equal(alternatives.authority,'none');assert.equal(alternatives.permission,'not-granted');
+ assert.deepEqual(alternatives.rows.map(r=>r.id),fit.rows.map(r=>r.id));
+ assert.equal(Object.values(alternatives.counts).reduce((n,v)=>n+v,0),fit.rows.length);
+ for(const row of alternatives.rows)for(const option of row.options){
+  const face=extraction.faces.find(f=>f.key===option.key),i=face.roadIds.indexOf(row.originalFrontage),m=face.roadIds.length;
+  assert.ok([(i+m-1)%m,(i+1)%m].includes(option.edgeIndex));assert.equal(option.roadId,face.roadIds[option.edgeIndex]);assert.equal(option.authority,'none');
+ }
+ assert.throws(()=>observeP6AlternativeFrontages(source,extraction,result.identity,fit,reshapes,access,root(1)),LareBudgetExceeded);
+ console.log('P6_ALTERNATIVE_FRONTAGES '+JSON.stringify({label,counts:alternatives.counts,options:alternatives.rows.reduce((n,r)=>n+r.options.length,0),authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -369,5 +380,26 @@ test('P6 same-frontage routes keep the original door, repair generated paths, pr
  assert.equal(run(authored,moved).rows[0].classification,'protected');
  const blocked={...source,properties:[p,{id:'obstruction',boundary:rect(0,1.5,40,3)}]};
  assert.equal(run(blocked,moved).rows[0].classification,'blocked');
+ assert.equal(JSON.stringify(source),before);
+});
+
+test('P6 alternative frontage eligibility is adjacent, generated only and never grants authorization',()=>{
+ const ring=[{x:0,y:0},{x:40,y:0},{x:40,y:40},{x:0,y:40}];
+ const p={id:'p',blockId:'old',plotIds:['q'],buildingIds:[],frontageRoadId:'r0',boundary:ring};
+ const q={id:'q',propertyId:'p',blockId:'old',frontageRoadId:'r0',boundary:ring};
+ stampRoadGenerated(p,[q]);
+ const face={kind:'block',key:'face',polygon:ring,roadIds:['r0','r1','r2','r3']};
+ const roads=new Map(face.roadIds.map(id=>[id,{id,kind:'lane',...(id==='r3'?{boundary:true}:{})}]));
+ const extraction={valid:true,faces:[face],graph:{roadsById:roads}};
+ const identity={correspondenceValid:true,changed:[{kind:'block',id:'old'}]};
+ const fit={status:'property-fit-observed',authority:'none',rows:[{id:'p',oldBlockId:'old',options:[{key:'face'}]}]};
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[{id:'p',options:[]}]};
+ const access={status:'same-frontage-access-observed',authority:'none',rows:[]};
+ const source={properties:[p],plots:[q],buildings:[]},before=JSON.stringify(source);
+ const run=(city=source,match=identity)=>observeP6AlternativeFrontages(city,extraction,match,fit,reshapes,access,root(8000000));
+ const result=run();assert.equal(result.rows[0].classification,'eligible');assert.deepEqual(result.rows[0].options.map(o=>o.roadId),['r1']);
+ assert.equal(result.permission,'not-granted');assert.equal(result.valid,false);
+ assert.equal(run({...source,properties:[{...p,customName:'Keep'}]}).rows[0].classification,'protected');
+ assert.equal(run(source,{...identity,changed:[]}).rows[0].classification,'unsupported');
  assert.equal(JSON.stringify(source),before);
 });

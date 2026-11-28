@@ -8,6 +8,7 @@ import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
 import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-refusal-geometry.mjs';
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
+import {observeP6AlternativeFrontages} from './ares-p6-alternative-frontages.mjs';
 import {observeP6SameFrontageAccess} from './ares-p6-same-frontage-access.mjs';
 import {observeP6CooperativeParcels} from './ares-p6-cooperative-parcels.mjs';
 import {observeP6ParcelConflicts} from './ares-p6-parcel-conflicts.mjs';
@@ -73,6 +74,8 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  if(cooperativeParcels.status!=='cooperative-parcels-observed')return refuse('cooperative-parcel-observation-refused',{reason:cooperativeParcels.reason});
  const sameFrontageAccess=stage('same-frontage-access-observation',()=>observeP6SameFrontageAccess(source,extraction,parcelReshapes,cooperativeParcels,budget));
  if(sameFrontageAccess.status!=='same-frontage-access-observed')return refuse('same-frontage-access-observation-refused',{reason:sameFrontageAccess.reason});
+ const alternativeFrontages=stage('alternative-frontage-observation',()=>observeP6AlternativeFrontages(source,extraction,identity,propertyFit,parcelReshapes,sameFrontageAccess,budget));
+ if(alternativeFrontages.status!=='alternative-frontage-observed')return refuse('alternative-frontage-observation-refused',{reason:alternativeFrontages.reason});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
@@ -88,6 +91,6 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
- return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,districts,defenses,
+ return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,blockLabels,affectedProperties,propertyAudit,propertyFit,parcelReshapes,parcelConflicts,cooperativeParcels,sameFrontageAccess,alternativeFrontages,districts,defenses,
   limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
 }
