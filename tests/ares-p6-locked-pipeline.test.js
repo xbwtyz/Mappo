@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {observeP6LockedDryPipeline,bindP6RoadRecords} from '../scripts/development/research/ares-p6-locked-pipeline.mjs';
 import {observeP6TopologyIdentity} from '../scripts/development/research/ares-p6-topology-identity.mjs';
 import {observeP6ConvexClearance} from '../scripts/development/research/ares-p6-block-capacity.mjs';
+import {shapeContained,shapeWellFormed} from '../src/core/building-validation.js';
+import {propertyFits} from '../src/core/placement.js';
+import {validatePlotTiling027} from '../src/core/plot-partition-027.js';
 import {extractRoadFaces,matchExistingFaces} from '../src/core/road-faces.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
 import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
@@ -35,7 +38,60 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
   assert.equal(r.pipeline.propertyFit.status,'property-fit-observed');
   assert.equal(r.pipeline.parcelReshapes.status,'parcel-reshape-observed');
   assert.equal(r.pipeline.parcelReshapes.rows.length,r.pipeline.propertyFit.rows.length);
-  console.log('P6_LOCKED_PARCEL_RESHAPES '+JSON.stringify({id,counts:r.pipeline.parcelReshapes.counts,attempts:r.pipeline.parcelReshapes.rows.reduce((n,r)=>n+r.attempts,0)}));
+  // Qualify the corrected face-key index against the full locked fixture.
+  // Independent raw source and legacy extraction are test-only oracles.
+  const source=materializeLockedRtreCase(id).project.city;
+  const prior=readP6ArchivedRoadEvidence(id);
+  const bound=bindP6RoadRecords(source,prior.construction.witness,r.fingerprint,root());
+  assert.equal(bound.status,'matched');
+  const legacy=extractRoadFaces(buildRoadGraph(bound.candidate),source);
+  assert.ok(legacy.valid);
+  const rawProperties=new Map(source.properties.map(p=>[p.id,p]));
+  const rawFaces=new Map(legacy.faces.filter(f=>f.kind==='block').map(f=>[f.key,f]));
+  const fitRows=new Map(r.pipeline.propertyFit.rows.map(p=>[p.id,p]));
+  const crossTab={},observedCounts={worldPreserved:0,reshaped:0,noCandidate:0,protected:0,unsupported:0};
+  const noCandidate={withoutOriginalFrontage:0,noAttempt:0,attempted:0};
+  let candidateCount=0,attempts=0;
+  assert.equal(fitRows.size,60);
+  assert.equal(r.pipeline.propertyFit.counts.unchangedShapeOption,32);
+  assert.equal(r.pipeline.propertyFit.counts.noUnchangedShapeOption,28);
+  const seen=new Set();
+  for(const row of r.pipeline.parcelReshapes.rows){
+   assert.ok(!seen.has(row.id));seen.add(row.id);
+   const p=rawProperties.get(row.id),fit=fitRows.get(row.id);
+   assert.ok(p&&fit);
+   assert.ok(Object.hasOwn(observedCounts,row.classification));
+   observedCounts[row.classification]++;
+   const group=crossTab[fit.classification]??={worldPreserved:0,reshaped:0,noCandidate:0,protected:0,unsupported:0};
+   group[row.classification]++;
+   attempts+=row.attempts;candidateCount+=row.options.length;
+   assert.ok(row.options.length<=24&&row.options.length<=row.attempts);
+   assert.equal(row.options.length>0,['worldPreserved','reshaped'].includes(row.classification));
+   if(row.classification==='noCandidate'){
+    if(!fit.options.some(o=>o.originalFrontagePresent))noCandidate.withoutOriginalFrontage++;
+    else if(row.attempts===0)noCandidate.noAttempt++;
+    else noCandidate.attempted++;
+   }
+   for(const option of row.options){
+    const face=rawFaces.get(option.key);
+    assert.ok(face&&fit.options.some(o=>o.key===option.key&&o.originalFrontagePresent));
+    assert.equal(option.frontageRoadId,p.frontageRoadId);
+    assert.equal(option.authority,'none');
+    assert.ok(face.roadIds.includes(p.frontageRoadId));
+    assert.ok(shapeWellFormed(option.boundary)&&shapeContained(option.boundary,face.polygon));
+    const edges=face.polygon.map((a,i)=>({a,b:face.polygon[(i+1)%face.polygon.length],road:legacy.graph.roadsById.get(face.roadIds[i])}));
+    assert.ok(propertyFits(option.boundary,face.polygon,edges));
+    assert.deepEqual(option.plots.map(q=>q.id),p.plotIds);
+    validatePlotTiling027(option.boundary,option.plots);
+    for(const building of source.buildings.filter(b=>b.propertyId===p.id))
+     for(const region of building.geometry.regions)assert.ok(shapeContained(region.ring,option.boundary));
+    if(option.family==='world-preserved')assert.deepEqual(option.boundary,p.boundary);
+   }
+  }
+  assert.equal(seen.size,fitRows.size);
+  assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
+  assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
+  console.log('P6_LOCKED_PARCEL_RESHAPES '+JSON.stringify({id,counts:observedCounts,attempts,candidateCount,crossTab,noCandidate,geometryOracle:'legacy-predicates',authority:'none'}));
   assert.equal(r.pipeline.propertyFit.rows.length,r.pipeline.propertyAudit.expandedCount);
   console.log('P6_LOCKED_PROPERTY_FIT '+JSON.stringify({id,counts:r.pipeline.propertyFit.counts}));
   assert.equal(r.pipeline.propertyAudit.baseCount,r.pipeline.affectedProperties.rows.length);
