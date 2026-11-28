@@ -1,0 +1,209 @@
+{
+  "version": 1,
+  "source": "257d5fe5d4413fbbcf35b758c6054aff2dc276fd",
+  "run": 46118234203,
+  "stats": {
+    "linear:control": {
+      "n": 25,
+      "verified": 9,
+      "direct": 7,
+      "recovered": 2,
+      "boundary": 6,
+      "work": 34233852,
+      "reasons": {
+        "necessary-cover-not-established": 7,
+        "no-geometric-seed": 3,
+        "success": 9,
+        "fixed-boundary": 6
+      }
+    },
+    "linear:experimental": {
+      "n": 25,
+      "verified": 17,
+      "direct": 12,
+      "recovered": 5,
+      "boundary": 5,
+      "work": 40705816,
+      "reasons": {
+        "success": 17,
+        "fixed-boundary": 5,
+        "no-geometric-seed": 3
+      }
+    },
+    "organic:control": {
+      "n": 25,
+      "verified": 11,
+      "direct": 8,
+      "recovered": 3,
+      "boundary": 2,
+      "work": 32614739,
+      "reasons": {
+        "success": 11,
+        "no-geometric-seed": 4,
+        "necessary-cover-not-established": 8,
+        "fixed-boundary": 2
+      }
+    },
+    "organic:experimental": {
+      "n": 25,
+      "verified": 16,
+      "direct": 11,
+      "recovered": 5,
+      "boundary": 2,
+      "work": 40923780,
+      "reasons": {
+        "success": 16,
+        "no-geometric-seed": 7,
+        "fixed-boundary": 2
+      }
+    },
+    "planned:control": {
+      "n": 25,
+      "verified": 13,
+      "direct": 9,
+      "recovered": 4,
+      "boundary": 1,
+      "work": 34985097,
+      "reasons": {
+        "necessary-cover-not-established": 11,
+        "success": 13,
+        "fixed-boundary": 1
+      }
+    },
+    "planned:experimental": {
+      "n": 25,
+      "verified": 19,
+      "direct": 14,
+      "recovered": 5,
+      "boundary": 1,
+      "work": 44898536,
+      "reasons": {
+        "no-geometric-seed": 5,
+        "success": 19,
+        "fixed-boundary": 1
+      }
+    },
+    "radial:experimental": {
+      "n": 25,
+      "verified": 8,
+      "direct": 6,
+      "recovered": 2,
+      "boundary": 0,
+      "work": 47498120,
+      "reasons": {
+        "success": 8,
+        "no-geometric-seed": 17
+      }
+    },
+    "radial:adaptive": {
+      "n": 25,
+      "verified": 6,
+      "direct": 5,
+      "recovered": 1,
+      "boundary": 0,
+      "work": 38888512,
+      "reasons": {
+        "success": 6,
+        "adaptive-hub:hub-collapse-or-winding": 3,
+        "no-geometric-seed": 8,
+        "adaptive-hub:hub-parent-changed": 8
+      }
+    },
+    "radial:control": {
+      "n": 25,
+      "verified": 13,
+      "direct": 9,
+      "recovered": 4,
+      "boundary": 0,
+      "work": 33636107,
+      "reasons": {
+        "necessary-cover-not-established": 4,
+        "success": 13,
+        "no-geometric-seed": 8
+      }
+    }
+  },
+  "paired": {
+    "control-vs-squareless": {
+      "n": 81,
+      "a": 33,
+      "b": 50,
+      "both": 32,
+      "aOnly": 1,
+      "bOnly": 18,
+      "neither": 30
+    },
+    "control-vs-squareless:linear": {
+      "n": 21,
+      "a": 6,
+      "b": 13,
+      "both": 6,
+      "aOnly": 0,
+      "bOnly": 7,
+      "neither": 8
+    },
+    "control-vs-squareless:organic": {
+      "n": 23,
+      "a": 9,
+      "b": 14,
+      "both": 9,
+      "aOnly": 0,
+      "bOnly": 5,
+      "neither": 9
+    },
+    "control-vs-squareless:planned": {
+      "n": 25,
+      "a": 13,
+      "b": 19,
+      "both": 13,
+      "aOnly": 0,
+      "bOnly": 6,
+      "neither": 6
+    },
+    "control-vs-adaptive": {
+      "n": 23,
+      "a": 12,
+      "b": 6,
+      "both": 6,
+      "aOnly": 6,
+      "bOnly": 0,
+      "neither": 11
+    },
+    "control-vs-adaptive:radial": {
+      "n": 23,
+      "a": 12,
+      "b": 6,
+      "both": 6,
+      "aOnly": 6,
+      "bOnly": 0,
+      "neither": 11
+    },
+    "control-vs-squareless:radial": {
+      "n": 12,
+      "a": 5,
+      "b": 4,
+      "both": 4,
+      "aOnly": 1,
+      "bOnly": 0,
+      "neither": 7
+    },
+    "squareless-vs-adaptive": {
+      "n": 12,
+      "a": 4,
+      "b": 4,
+      "both": 4,
+      "aOnly": 0,
+      "bOnly": 0,
+      "neither": 8
+    },
+    "squareless-vs-adaptive:radial": {
+      "n": 12,
+      "a": 4,
+      "b": 4,
+      "both": 4,
+      "aOnly": 0,
+      "bOnly": 0,
+      "neither": 8
+    }
+  }
+}
