@@ -115,6 +115,19 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
    const original=source.buildings.find(b=>b.id===row.id);
    assert.deepEqual(row.route.entrance,original.entrance);assert.equal(row.route.frontageRoadId,original.frontageRoadId);
   }
+  assert.equal(Object.values(access.counts).reduce((n,v)=>n+v,0),access.rows.length);
+  for(const row of access.rows){
+   assert.equal(!!row.route,['retained','repaired'].includes(row.classification));
+   if(row.route){
+    const road=bound.candidate.roads.find(x=>x.id===row.frontageRoadId);
+    const a=bound.candidate.nodes.find(x=>x.id===road?.a),b=bound.candidate.nodes.find(x=>x.id===road?.b);
+    assert.ok(a&&b);
+    const end=row.route.accessPath.at(-1),dx=b.x-a.x,dy=b.y-a.y;
+    const t=((end.x-a.x)*dx+(end.y-a.y)*dy)/(dx*dx+dy*dy);
+    assert.ok(t>=-1e-6&&t<=1+1e-6);
+    assert.ok(Math.hypot(end.x-a.x-t*dx,end.y-a.y-t*dy)<=1e-6);
+   }
+  }
   console.log('P6_LOCKED_SAME_FRONTAGE_ACCESS '+JSON.stringify({id,counts:access.counts,unknown:access.unknown.length,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);

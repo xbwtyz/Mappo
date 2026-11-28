@@ -363,7 +363,9 @@ test('P6 same-frontage routes keep the original door, repair generated paths, pr
  assert.equal(run(source).rows[0].classification,'retained');
  const moved={...extraction,graph:{...extraction.graph,nodesById:new Map([['a',{x:0,y:1}],['c',{x:40,y:1}]])}};
  const repaired=run(source,moved).rows[0];assert.equal(repaired.classification,'repaired');assert.deepEqual(repaired.route.entrance,door);assert.equal(repaired.route.accessPath.at(-1).y,1);
- const authored={...source,buildings:[{...building,roadProvenance:undefined}]};
+ const {roadProvenance:removedStamp,...unstampedBuilding}=building;
+ assert.ok(removedStamp);
+ const authored={...source,buildings:[unstampedBuilding]};
  assert.equal(run(authored,moved).rows[0].classification,'protected');
  const blocked={...source,properties:[p,{id:'obstruction',boundary:rect(0,1.5,40,3)}]};
  assert.equal(run(blocked,moved).rows[0].classification,'blocked');
