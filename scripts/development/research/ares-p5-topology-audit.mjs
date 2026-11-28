@@ -1,3 +1,4 @@
+import {auditAdaptiveHub} from './square-trial-hub-audit.mjs';
 import {squareRecoveryLockedRow} from './square-trial-recovery-lock.mjs';
 import {tournamentLockedRow} from './ares-p5-tournament-lock.mjs';
 import {plazaExperimentCase,plazaExperimentSeed} from './ares-p5-holdout-plaza-experiment-lock.mjs';
@@ -317,6 +318,7 @@ async function auditSplit(caseId,permissions,evidence,combined,holdout=false,pla
       for(const r of roads){b.spend();if(!r.plaza)continue;protectedRoads++;need(!parts.has(r.id)&&equalP5GraphRecord(r,rebuilt.roadsById.get(r.id),b),'plaza-road-changed');}
       result.plazaPreservation={vertices:square.size,protectedRoads,exceptedAnchors:[...usedExceptions].sort(riCompare),geometry:'unchanged',parentIncidence:'unchanged',landAccess:'not-verified'};
     }
+    if(lock.hub){result.hub=auditAdaptiveHub(city,candidate,lock.hub,b);need(result.hub.status==='hub-verified','adaptive-hub:'+result.hub.reason);}
     const identityLedger=inspectP5IdentityLedger({kind:coordinated&&!expected.length?'translation':'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);

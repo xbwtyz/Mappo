@@ -1,3 +1,4 @@
+import {squareTournamentFrozenRow,materializeFrozenSquareTournament} from './square-trial-tournament-lock.mjs';
 import {materializeSquareAdmission,SQUARE_ADMISSION_CASES} from './square-trial-recovery-admission.mjs';
 import {normalizeSpatialRoadGroup} from '../../../src/core/spatial-recovery-road-adapter.js';
 import {createAresDiagnosticContext} from '../../../src/core/ares-diagnostic-contract.js';
@@ -25,10 +26,13 @@ function load(id){
  const lock=riFreeze({id,source:f.source,limits:G_MANIFEST.search.root,slot:{city:key,offset:f.row.offset},offset:f.row.offset,selectedRoadIds:f.row.selected,matched:f.row.matched,squareTrial:true});
  return {f,lock};
 }
-export function squareRecoveryLockedRow(id){return load(id).lock;}
+export function squareRecoveryLockedRow(id){
+ if(typeof id==='string'&&id.startsWith('sq:tournament:')){const r=squareTournamentFrozenRow(id);return riFreeze({...r,limits:G_MANIFEST.search.root,slot:{city:r.city,offset:r.offset},squareTrial:true});}
+ return load(id).lock;
+}
 export function materializeSquareRecoveryCase(id){
- const {f,lock}=load(id);
- const operation=normalizeSpatialRoadGroup(f.project,1,[...lock.selectedRoadIds],lock.offset,G_MANIFEST.permissions);
+ const lock=squareRecoveryLockedRow(id),project=id.startsWith('sq:tournament:')?materializeFrozenSquareTournament(id):load(id).f.project;
+ const operation=normalizeSpatialRoadGroup(project,1,[...lock.selectedRoadIds],lock.offset,G_MANIFEST.permissions);
  const context=createAresDiagnosticContext({version:1,sessionId:id,sourceVersion:APP_VERSION,operation});
- return {project:f.project,context,limits:lock.limits};
+ return {project,context,limits:lock.limits};
 }
