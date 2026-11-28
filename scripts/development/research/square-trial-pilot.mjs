@@ -28,10 +28,14 @@ function arm(recipe,survey,variant){
    plazaRoads:l.roads.filter(r=>r.plaza).length,protectedRoads:protectedRoads.length,protectedNodes:protectedNodes.size,maxDegree:Math.max(...degrees),blockArea:l.blocks.reduce((sum,r)=>sum+r.area,0)};
  }catch(e){return {status:'refused',stage,reason:e.message};}
 }
-export function runSquarePilot(id){
+export function materializeSquarePilotLayouts(id){
  const recipe=SQUARE_PILOT.find(r=>r.id===id);if(!recipe)throw Error('Unknown square pilot recipe.');
  const survey=generateSurvey(recipe.seed,recipe.size,recipe.morphology),center=findCityCenter(survey.boundary);
  survey.anchors=[{id:'SITE-00',kind:'center',...center},...survey.anchors.slice(1).filter(p=>insideOrOn(p,survey.boundary))];
+ return {recipe,survey};
+}
+export function runSquarePilot(id){
+ const {recipe,survey}=materializeSquarePilotLayouts(id);
  const before=hash(survey),control=arm(recipe,structuredClone(survey),'control'),experimental=arm(recipe,structuredClone(survey),'experimental');
  if(hash(survey)!==before)throw Error('Pilot mutated shared survey.');
  return riFreeze({id,recipe,survey:before,control,experimental,authority:'none',roadRecovery:'not-evaluated',schema:'not-a-project'});
