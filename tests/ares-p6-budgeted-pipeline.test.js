@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6ParcelConflicts} from '../scripts/development/research/ares-p6-parcel-conflicts.mjs';
 import {observeP6ParcelReshapes} from '../scripts/development/research/ares-p6-parcel-reshapes.mjs';
 import {stampRoadGenerated} from '../src/core/road-provenance.js';
 import {validatePlotTiling027} from '../src/core/plot-partition-027.js';
@@ -60,7 +61,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,15);
+ assert.equal(result.ledger.length,16);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -210,6 +211,13 @@ function verify(source,candidate,legacy,extraction,label){
  assert.equal(Object.values(reshapes.counts).reduce((n,c)=>n+c,0),fit.rows.length);
  assert.throws(()=>observeP6ParcelReshapes(source,extraction,fit,root(1)),LareBudgetExceeded);
  console.log('P6_PARCEL_RESHAPES '+JSON.stringify({label,counts:reshapes.counts,attempts:reshapes.rows.reduce((n,r)=>n+r.attempts,0),authority:'none'}));
+ const conflicts=result.parcelConflicts;
+ assert.equal(conflicts.status,'parcel-conflicts-observed');assert.equal(conflicts.authority,'none');assert.equal(conflicts.valid,false);
+ assert.equal(conflicts.counts.candidates,reshapes.rows.reduce((n,r)=>n+r.options.length,0));
+ assert.equal(conflicts.counts.pairConflicts,conflicts.pairs.length);
+ for(const row of reshapes.rows)assert.equal(row.attempts,row.options.length+Object.values(row.rejections).reduce((n,v)=>n+v,0));
+ assert.throws(()=>observeP6ParcelConflicts(source,reshapes,root(1)),LareBudgetExceeded);
+ console.log('P6_PARCEL_CONFLICTS '+JSON.stringify({label,counts:conflicts.counts,authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
@@ -269,4 +277,24 @@ test('P6 bounded affine parcel candidates preserve plot IDs and refuse protected
  const fixed={...p,buildingIds:['b']};stampRoadGenerated(fixed,[q]);
  const blocked={...source,properties:[fixed],buildings:[{id:'b',propertyId:'p',geometry:{regions:[{ring:rect(12,2.2,2,1)}]}}]};
  assert.equal(observeP6ParcelReshapes(blocked,extraction,fit,root(8000000)).rows[0].classification,'noCandidate');
+});
+
+test('P6 candidate compatibility distinguishes fixed, unresolved, and alternative conflicts',()=>{
+ const rect=(x,y,w,d)=>[{x,y},{x:x+w,y},{x:x+w,y:y+d},{x,y:y+d}];
+ const p=(id,x)=>({id,boundary:rect(x,0,10,10)});
+ const option=(x)=>({key:'face',authority:'none',boundary:rect(x,0,10,10)});
+ const source={properties:[p('a',0),p('b',20),p('fixed',40),p('unresolved',60)]};
+ const reshapes={status:'parcel-reshape-observed',authority:'none',rows:[
+  {id:'a',classification:'reshaped',options:[option(35),option(55),option(15)]},
+  {id:'b',classification:'worldPreserved',options:[option(20)]},
+  {id:'unresolved',classification:'noCandidate',options:[]}]};
+ const before=JSON.stringify([source,reshapes]);
+ const result=observeP6ParcelConflicts(source,reshapes,root(8000000));
+ assert.equal(result.status,'parcel-conflicts-observed');
+ assert.deepEqual(result.rows.map(r=>[r.id,r.index,r.fixedHits,r.unresolvedHits]),[
+  ['a',0,['fixed'],[]],['a',1,[],['unresolved']],['a',2,[],[]],['b',0,[],[]]]);
+ assert.deepEqual(result.pairs,[{a:['a',2],b:['b',0]}]);
+ assert.equal(result.counts.fixedBlocked,1);assert.equal(result.counts.unresolvedContact,1);
+ assert.equal(result.selection,'not-performed');assert.equal(JSON.stringify([source,reshapes]),before);
+ assert.equal(observeP6ParcelConflicts(source,{...reshapes,rows:[...reshapes.rows,reshapes.rows[0]]},root(8000000)).reason,'invalid-candidate-census');
 });

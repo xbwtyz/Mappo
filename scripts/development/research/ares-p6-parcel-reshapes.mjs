@@ -27,7 +27,7 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
   for(const id of p.plotIds){b.spend();const plot=plots.get(id);if(!plot||plot.propertyId!==p.id)return refuse('invalid-plot-owner');own.push(plot);}
   aresReplayJson([p,own],b);
   const policy=classifyLareProperty(p,own);
-  const row={id:p.id,policy,options:[],attempts:0,classification:'noCandidate'};
+  const row={id:p.id,policy,options:[],attempts:0,rejections:{frontage:0,boundary:0,setback:0,fixedBuilding:0,plotTiling:0},classification:'noCandidate'};
   const finish=classification=>{row.classification=classification;counts[classification]++;rows.push(row);};
   if(policy.mode!=='adaptive'){finish('protected');continue;}
   let supported=true;
@@ -81,11 +81,14 @@ export function observeP6ParcelReshapes(source,extraction,fit,b){
     b.expand();row.attempts++;
     charge(b,8*n*n+24*n*m+8*n*fixedCorners+n+plotCorners);
     const boundary=original.map(map),l=project(boundary[0]),r=project(boundary[1]);
-    if(l.u< -eps||r.u>length+eps||r.u-l.u<minWidth-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps||
-      !shapeWellFormed(boundary)||!shapeContained(boundary,points)||!propertyFits(boundary,points,streetEdges)||fixed.some(ring=>!shapeContained(ring,boundary)))return false;
+    // First failing predicate only; retain original evaluation order.
+    if(l.u< -eps||r.u>length+eps||r.u-l.u<minWidth-eps||Math.abs(l.v-r.v)>1e-5||l.v<setback-eps){row.rejections.frontage++;return false;}
+    if(!shapeWellFormed(boundary)||!shapeContained(boundary,points)){row.rejections.boundary++;return false;}
+    if(!propertyFits(boundary,points,streetEdges)){row.rejections.setback++;return false;}
+    if(fixed.some(ring=>!shapeContained(ring,boundary))){row.rejections.fixedBuilding++;return false;}
     const next=own.map(q=>({...q,boundary:q.boundary.map(map)}));
     try{verifyLarePlotDeformation(boundary,own,next,b,adjacency);}
-    catch(error){if(error instanceof LareBudgetExceeded)throw error;return false;}
+    catch(error){if(error instanceof LareBudgetExceeded)throw error;row.rejections.plotTiling++;return false;}
     const geometry={key:option.key,family,boundary,plots:next.map(q=>({id:q.id,boundary:q.boundary})),frontageRoadId:p.frontageRoadId,authority:'none'};
     row.options.push(geometry);return true;
    };

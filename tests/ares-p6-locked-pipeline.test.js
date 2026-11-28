@@ -88,6 +88,17 @@ for(const id of P6_A_CASES)test('P6 locked pipeline '+id,async()=>{
     if(option.family==='world-preserved')assert.deepEqual(option.boundary,p.boundary);
    }
   }
+  const conflicts=r.pipeline.parcelConflicts;
+  assert.equal(conflicts.status,'parcel-conflicts-observed');
+  assert.equal(conflicts.counts.candidates,candidateCount);
+  assert.equal(conflicts.authority,'none');
+  const rejections={frontage:0,boundary:0,setback:0,fixedBuilding:0,plotTiling:0};
+  const unresolvedRejections={...rejections};
+  for(const row of r.pipeline.parcelReshapes.rows){
+   assert.equal(row.attempts,row.options.length+Object.values(row.rejections).reduce((n,v)=>n+v,0));
+   for(const key of Object.keys(rejections)){rejections[key]+=row.rejections[key];if(row.classification==='noCandidate')unresolvedRejections[key]+=row.rejections[key];}
+  }
+  console.log('P6_LOCKED_PARCEL_CONFLICTS '+JSON.stringify({id,counts:conflicts.counts,rejections,unresolvedRejections,authority:'none'}));
   assert.equal(seen.size,fitRows.size);
   assert.deepEqual(observedCounts,r.pipeline.parcelReshapes.counts);
   assert.ok(r.stats.expansions>=attempts&&r.stats.expansions<=32768);
