@@ -8,6 +8,7 @@ import {validateP6BudgetedDefenses} from './ares-p6-budgeted-defenses.mjs';
 import {observeP6UnmatchedGeometry,observeP6SmallFaceGeometry} from './ares-p6-refusal-geometry.mjs';
 import {observeP6TopologyIdentity} from './ares-p6-topology-identity.mjs';
 import {observeP6BlockCapacity} from './ares-p6-block-capacity.mjs';
+import {observeP6BlockOwnership} from './ares-p6-block-ownership.mjs';
 import {planP6BlockRecords} from './ares-p6-block-record-plan.mjs';
 import {aresReplayJson} from '../../../src/core/ares-diagnostic-replay.js';
 import {LareBudgetExceeded} from '../../../src/core/reconciliation-budget.js';
@@ -46,6 +47,8 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const blockPlan=stage('block-record-plan',()=>planP6BlockRecords(source,extraction,identity,lineage,budget));
  if(blockPlan.status!=='block-plan-observed')return refuse('block-record-plan-refused',{reason:blockPlan.reason});
+ const blockOwnership=stage('block-ownership-observation',()=>observeP6BlockOwnership(source,blockPlan,budget));
+ if(blockOwnership.status!=='block-ownership-observed')return refuse('block-ownership-refused',{reason:blockOwnership.reason});
  // This is only the legacy mapped-block snapshot, NOT rebuilt land.
  const snapshot=stage('diagnostic-snapshot',()=>{
   budget.spend(Math.max(1,identity.preserved.length+identity.changed.length+candidate.nodesById.size+candidate.roadsById.size));
@@ -61,6 +64,6 @@ export function observeP6DryPipeline(source,candidateRoads,budget){
  }
  const districts=check('district-diagnostic',!!source.districtState,validateP6BudgetedDistricts);
  const defenses=check('defense-diagnostic',!!source.fortificationState,validateP6BudgetedDefenses);
- return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,districts,defenses,
+ return {valid:false,authority:'none',diagnosticsComplete:true,ledger,identity,lineage,blockPlan,blockOwnership,districts,defenses,
   limitations:['no-independent-road-authorization','no-rebuilt-land','no-mixed-landscape','no-apply']};
 }

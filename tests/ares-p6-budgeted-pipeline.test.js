@@ -9,6 +9,7 @@ import {buildRoadFaceLineage023} from '../src/core/road-face-lineage-023.js';
 import {createSpatialPreservationBudget} from '../src/core/spatial-recovery-contract.js';
 import {LareBudgetExceeded} from '../src/core/reconciliation-budget.js';
 import {buildRoadGraph} from '../src/core/road-graph.js';
+import {observeP6BlockOwnership} from '../scripts/development/research/ares-p6-block-ownership.mjs';
 import {planP6BlockRecords,equalP6BlockRecord} from '../scripts/development/research/ares-p6-block-record-plan.mjs';
 import {observeP6DryPipeline} from '../scripts/development/research/ares-p6-budgeted-pipeline.mjs';
 import {buildP6BudgetedLineage} from '../scripts/development/research/ares-p6-budgeted-lineage.mjs';
@@ -50,7 +51,7 @@ function verify(source,candidate,legacy,extraction,label){
   assert.equal(result[key].passed,!legacy.issues.some(i=>i.code===code));
  }
  const used=b.snapshot().work-7;assert.equal(result.ledger.reduce((n,r)=>n+r.work,0),used);
- assert.equal(result.ledger.length,9);
+ assert.equal(result.ledger.length,10);
  const plan=result.blockPlan;
  assert.equal(plan.status,'block-plan-observed');assert.equal(plan.valid,false);
  assert.equal(plan.authority,'none');assert.equal(plan.landVerified,false);
@@ -68,6 +69,22 @@ function verify(source,candidate,legacy,extraction,label){
   }
  }
  assert.equal(plan.structural>0,label!=='fortified-unchanged');
+ const ownership=result.blockOwnership;
+ assert.equal(ownership.status,'block-ownership-observed');
+ assert.equal(ownership.valid,false);assert.equal(ownership.authority,'none');assert.equal(ownership.landVerified,false);
+ assert.equal(ownership.retained,plan.retained);
+ assert.equal(ownership.allocation,'not-performed');assert.equal(ownership.retirement,'not-authorized');
+ assert.equal(ownership.allocationTypeRegistered,false);
+ assert.deepEqual(ownership.ledger.map(r=>({oldId:r.oldId,candidateKeys:r.candidateKeys})),old.reverse);
+ const expectedRefs=source.blocks.map(block=>({oldId:block.id,references:['properties','plots','buildings','openSpaces'].flatMap(collection=>source[collection].filter(r=>r.blockId===block.id).map(r=>({collection,id:r.id}))).sort((a,b)=>a.collection<b.collection?-1:a.collection>b.collection?1:a.id<b.id?-1:a.id>b.id?1:0)})).sort((a,b)=>a.oldId<b.oldId?-1:a.oldId>b.oldId?1:0);
+ assert.deepEqual(ownership.ledger.map(({oldId,references})=>({oldId,references})),expectedRefs);
+ assert.equal(ownership.pendingFaces.length,plan.structural);
+ assert.equal(ownership.minimumNewIds,Math.max(0,plan.rows.length-source.blocks.length));
+ assert.equal(ownership.minimumRetirements,Math.max(0,source.blocks.length-plan.rows.length));
+ assert.equal(observeP6BlockOwnership(source,{...plan,reverse:plan.reverse.slice(1)},root(8000000)).status,'refused');
+ assert.equal(observeP6BlockOwnership({...source,properties:[...source.properties,{id:'invalid-test-reference',blockId:'absent'}]},plan,root(8000000)).reason,'invalid-land-reference');
+ assert.throws(()=>observeP6BlockOwnership(source,plan,root(1)),LareBudgetExceeded);
+ console.log('P6_BLOCK_OWNERSHIP '+JSON.stringify({label,retained:ownership.retained,pendingOld:ownership.pendingOld,pendingFaces:ownership.pendingFaces.length,minimumNewIds:ownership.minimumNewIds,minimumRetirements:ownership.minimumRetirements,references:ownership.ledger.reduce((n,r)=>n+r.references.length,0),authority:'none'}));
  const changed=[...result.identity.preserved,...result.identity.changed].find(m=>m.kind==='block');
  const tamper=items=>items.map(m=>m===changed?{...m,record:{...m.record,unexpectedMetadata:'wrong'}}:m);
  assert.equal(planP6BlockRecords(source,extraction,{...result.identity,preserved:tamper(result.identity.preserved),changed:tamper(result.identity.changed)},result.lineage,root(8000000)).reason,'record-mismatch');
