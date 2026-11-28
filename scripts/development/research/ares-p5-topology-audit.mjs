@@ -1,3 +1,4 @@
+import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {inspectP5IdentityLedger} from './ares-p5-topology-lineage.mjs';
 import {createHash} from 'node:crypto';
@@ -65,7 +66,12 @@ export async function auditP5SplitPilot(caseId,permissions,evidence){
 export async function auditP5CombinedPilot(caseId,permissions,evidence){
   return auditSplit(caseId,permissions,evidence,g2Seed(caseId));
 }
-async function auditSplit(caseId,permissions,evidence,combined){
+// Holdout keeps the C reconstruction but requires the G2 rotation gate.
+export async function auditP5HoldoutSplit(caseId,evidence){
+  holdoutLockedRow(caseId);
+  return auditSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,evidence,null,true);
+}
+async function auditSplit(caseId,permissions,evidence,combined,holdout=false){
   // No caller-supplied budget or scope, no search retry. This root is
   // independent evidence only, never a continuation of construction.
   const b=createSpatialPreservationBudget({work:8000000,stateExpansions:32768});
@@ -259,9 +265,9 @@ async function auditSplit(caseId,permissions,evidence,combined){
           originalPoint:point(original.nodesById.get(id)),proposedPoint:point(positions.get(id))});
       }
     }
-    result.rotationDiagnostic={authority:'none',policy:combined?'required':'observation-only',checked,geometryChanged,splitChanged,finalChanged,changes};
+    result.rotationDiagnostic={authority:'none',policy:combined||holdout?'required':'observation-only',checked,geometryChanged,splitChanged,finalChanged,changes};
     aresReplayJson(result.rotationDiagnostic,b);
-    if(combined)need(finalChanged===0,'cyclic-parent-order-changed');
+    if(combined||holdout)need(finalChanged===0,'cyclic-parent-order-changed');
     const identityLedger=inspectP5IdentityLedger({kind:'split',original:city,candidate,
       splitChains:expected.map(l=>({parent:l.parent,children:l.children.map(x=>x.id)}))},b);
     need(identityLedger.status==='complete','identity-ledger:'+identityLedger.reason);

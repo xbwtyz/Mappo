@@ -1,3 +1,4 @@
+import {holdoutLockedRow,HOLDOUT_SPLIT_PERMISSIONS} from './ares-p5-holdout-lock.mjs';
 import {g2Seed} from './ares-p5-topology-g2-lock.mjs';
 import {createHash} from 'node:crypto';
 import {materializeLockedRtreCase,lockedRtreCase} from './ares-rtre-locked-recipes.mjs';
@@ -104,6 +105,11 @@ export async function constructP5SplitPilot(caseId,input){
 }
 export async function constructP5CombinedPilot(caseId,input){
   return constructSplit(caseId,input,g2Seed(caseId));
+}
+// Holdout: same exact-translation constructor, with fixed permissions.
+export async function constructP5HoldoutSplit(caseId){
+  holdoutLockedRow(caseId);
+  return constructSplit(caseId,HOLDOUT_SPLIT_PERMISSIONS,null);
 }
 async function constructSplit(caseId,input,combined){
   const permissions=p5Permissions(input),budget=createSpatialPreservationBudget({work:P5_LIMITS.work,stateExpansions:P5_LIMITS.stateExpansions});

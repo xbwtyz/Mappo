@@ -1,0 +1,1190 @@
+{
+  "run": 46098228359,
+  "attempt": 1,
+  "source": "20d819b97c6bd1268afe552cf1901f3d45e963ec",
+  "job": 140834563443,
+  "rows": [
+    {
+      "caseId": "h:linear-21",
+      "arm": "analytical",
+      "source": "f866bcd079fcc4c667e6caf74244dbb8530554f31ad2c88ef7cadc495b6ff873",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-21",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "group": "five-chain",
+      "offset": {
+        "x": 100,
+        "y": -100
+      },
+      "selectedRoadIds": [
+        "RD-0159",
+        "RD-0162",
+        "RD-0169",
+        "RD-0171",
+        "RD-0173"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1220878,
+        "expansions": 0,
+        "remainingWork": 6779122,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 3506.699818
+    },
+    {
+      "caseId": "h:linear-22",
+      "arm": "analytical",
+      "source": "93687b6392bf5171bf8040de8d3e4566484b1271d434863337a079c76d491e3d",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-22",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "group": "five-branch",
+      "offset": {
+        "x": 100,
+        "y": -50
+      },
+      "selectedRoadIds": [
+        "RD-0123",
+        "RD-0124",
+        "RD-0125",
+        "RD-0126",
+        "RD-0127"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 249206,
+        "expansions": 0,
+        "remainingWork": 7750794,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 611.626299
+    },
+    {
+      "caseId": "h:linear-23",
+      "arm": "analytical",
+      "source": "6bd99c0267ae50f8e9d4c3f85788edc7b4de44c1e162895c0068784a149935da",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-23",
+        "size": "medium",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": 100,
+        "y": 0
+      },
+      "selectedRoadIds": [
+        "RD-0145",
+        "RD-0147",
+        "RD-0149",
+        "RD-0151",
+        "RD-0153",
+        "RD-0156",
+        "RD-0168",
+        "RD-0170"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 589812,
+        "expansions": 0,
+        "remainingWork": 7410188,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1388.5608350000002
+    },
+    {
+      "caseId": "h:linear-24",
+      "arm": "analytical",
+      "source": "6c9a2c39b9ff9ce9565155f9894932d8459da87d7243fd359f2764bf496afca4",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-24",
+        "size": "large",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "group": "eight-loop",
+      "offset": {
+        "x": 100,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0164",
+        "RD-0165",
+        "RD-0166",
+        "RD-0168",
+        "RD-0171",
+        "RD-0199",
+        "RD-0201",
+        "RD-0203"
+      ],
+      "authority": "none",
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1295081,
+        "expansions": 0,
+        "remainingWork": 6704919,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2609.5646260000003,
+      "audit": {
+        "version": 1,
+        "caseId": "h:linear-24",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0149",
+          "RD-0150",
+          "RD-0151",
+          "RD-0152",
+          "RD-0162",
+          "RD-0164",
+          "RD-0165",
+          "RD-0166",
+          "RD-0167",
+          "RD-0168",
+          "RD-0169",
+          "RD-0170",
+          "RD-0171",
+          "RD-0197",
+          "RD-0199",
+          "RD-0200",
+          "RD-0201",
+          "RD-0202",
+          "RD-0203",
+          "RD-0204",
+          "RD-0205",
+          "RD-0206"
+        ],
+        "finalChecked": 66,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 1443372,
+          "expansions": 0,
+          "remainingWork": 6556628,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 2694.2711820000004,
+      "witness": null
+    },
+    {
+      "caseId": "h:linear-25",
+      "arm": "analytical",
+      "source": "edf4108c3e47c880d3f257fc8f4dd7e153aee0ed4a1b0cbc87436c73d2a9b0cf",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-linear-25",
+        "size": "small",
+        "morphology": "linear",
+        "irregularProperties": false
+      },
+      "group": "quad",
+      "offset": {
+        "x": 100,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0121",
+        "RD-0122",
+        "RD-0124",
+        "RD-0131"
+      ],
+      "authority": "none",
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0117",
+        "RD-0118",
+        "RD-0120",
+        "RD-0121",
+        "RD-0122",
+        "RD-0123",
+        "RD-0124",
+        "RD-0130",
+        "RD-0131",
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0146",
+        "RD-0148",
+        "RD-0149",
+        "RD-0164",
+        "RD-0165",
+        "RD-0166"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "searchStats": {
+        "work": 1226833,
+        "expansions": 256,
+        "remainingWork": 6773167,
+        "remainingExpansions": 32512
+      },
+      "searchMs": 1341.941413999999
+    },
+    {
+      "caseId": "h:organic-01",
+      "arm": "hybrid",
+      "source": "dbe40b02afe9c350afbbf9506626a50e4b3a8252920ac41df7465663fe240a70",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-01",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "group": "quad",
+      "offset": {
+        "x": -100,
+        "y": -100
+      },
+      "selectedRoadIds": [
+        "RD-0117",
+        "RD-0118",
+        "RD-0120",
+        "RD-0130"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 233112,
+        "expansions": 0,
+        "remainingWork": 7766888,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 887.672507
+    },
+    {
+      "caseId": "h:organic-02",
+      "arm": "hybrid",
+      "source": "735bf9cb6c347190b80a4913b3522dc358b019f2bab1f586d75d1c90db84b654",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-02",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "group": "pentagon",
+      "offset": {
+        "x": -100,
+        "y": -50
+      },
+      "selectedRoadIds": [
+        "RD-0234",
+        "RD-0235",
+        "RD-0238",
+        "RD-0258",
+        "RD-0366"
+      ],
+      "authority": "none",
+      "category": "geometry-recovered",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0189",
+        "RD-0191",
+        "RD-0207",
+        "RD-0209",
+        "RD-0210",
+        "RD-0212",
+        "RD-0214",
+        "RD-0229",
+        "RD-0231",
+        "RD-0232",
+        "RD-0234",
+        "RD-0235",
+        "RD-0236",
+        "RD-0238",
+        "RD-0262"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "searchStats": {
+        "work": 3958548,
+        "expansions": 918,
+        "remainingWork": 4041452,
+        "remainingExpansions": 31850
+      },
+      "searchMs": 3239.1743829999996,
+      "audit": {
+        "version": 1,
+        "caseId": "h:organic-02",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0189",
+          "RD-0193",
+          "RD-0207",
+          "RD-0209",
+          "RD-0210",
+          "RD-0211",
+          "RD-0212",
+          "RD-0213",
+          "RD-0214",
+          "RD-0229",
+          "RD-0231",
+          "RD-0232",
+          "RD-0234",
+          "RD-0235",
+          "RD-0236",
+          "RD-0237",
+          "RD-0238",
+          "RD-0258",
+          "RD-0262",
+          "RD-0365",
+          "RD-0366"
+        ],
+        "finalChecked": 63,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 627597,
+          "expansions": 0,
+          "remainingWork": 7372403,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1122.977258,
+      "witness": {
+        "neighbors": [
+          {
+            "id": "N-0161",
+            "old": {
+              "x": 57.045852855701746,
+              "y": -104.94989211508938
+            },
+            "point": {
+              "x": 30.160947821638196,
+              "y": -107.66332647511919
+            }
+          },
+          {
+            "id": "N-0163",
+            "old": {
+              "x": 171.4201288883115,
+              "y": -124.71308126350598
+            },
+            "point": {
+              "x": 167.2307678286279,
+              "y": -120.65645817428404
+            }
+          },
+          {
+            "id": "N-0170",
+            "old": {
+              "x": 79.37446070720999,
+              "y": -62.38417226030157
+            },
+            "point": {
+              "x": 21.287340860463317,
+              "y": -48.74673171206754
+            }
+          }
+        ],
+        "updates": [
+          {
+            "id": "N-0161",
+            "point": {
+              "x": 30.160947821638196,
+              "y": -107.66332647511919
+            }
+          },
+          {
+            "id": "N-0163",
+            "point": {
+              "x": 167.2307678286279,
+              "y": -120.65645817428404
+            }
+          },
+          {
+            "id": "N-0170",
+            "point": {
+              "x": 21.287340860463317,
+              "y": -48.74673171206754
+            }
+          },
+          {
+            "id": "N-0171",
+            "point": {
+              "x": 31.006918886598527,
+              "y": -106.56508723211695
+            }
+          },
+          {
+            "id": "N-0172",
+            "point": {
+              "x": 77.23689882721453,
+              "y": -95.3010322506768
+            }
+          },
+          {
+            "id": "N-0182",
+            "point": {
+              "x": 33.09967297567354,
+              "y": -37.9882714960205
+            }
+          },
+          {
+            "id": "N-0184",
+            "point": {
+              "x": 72.50201006216491,
+              "y": -39.40607291073562
+            }
+          },
+          {
+            "id": "N-0196",
+            "point": {
+              "x": 57.335881502277346,
+              "y": -37.9882714960205
+            }
+          }
+        ],
+        "changedRoadIds": [
+          "RD-0189",
+          "RD-0193",
+          "RD-0207",
+          "RD-0209",
+          "RD-0210",
+          "RD-0211",
+          "RD-0212",
+          "RD-0213",
+          "RD-0214",
+          "RD-0229",
+          "RD-0231",
+          "RD-0232",
+          "RD-0234",
+          "RD-0235",
+          "RD-0236",
+          "RD-0237",
+          "RD-0238",
+          "RD-0258",
+          "RD-0262",
+          "RD-0365",
+          "RD-0366"
+        ],
+        "displacement": 92.51955249554231
+      }
+    },
+    {
+      "caseId": "h:organic-03",
+      "arm": "hybrid",
+      "source": "618a91be5b97ab52df67c83c46b0370aaf55bc5da9a67f090e83e346ad40671a",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-03",
+        "size": "large",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "group": "five-chain",
+      "offset": {
+        "x": -100,
+        "y": 0
+      },
+      "selectedRoadIds": [
+        "RD-0154",
+        "RD-0156",
+        "RD-0159",
+        "RD-0168",
+        "RD-0170"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1186450,
+        "expansions": 0,
+        "remainingWork": 6813550,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 2690.7964380000003
+    },
+    {
+      "caseId": "h:organic-04",
+      "arm": "hybrid",
+      "source": "d29862e24675f0a0525d465542eb851c4ba0d666b55558d752eb3e623241e180",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-04",
+        "size": "small",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "group": "five-branch",
+      "offset": {
+        "x": -100,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0119",
+        "RD-0120",
+        "RD-0121",
+        "RD-0122",
+        "RD-0123"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 239347,
+        "expansions": 0,
+        "remainingWork": 7760653,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 535.5664790000001
+    },
+    {
+      "caseId": "h:organic-05",
+      "arm": "hybrid",
+      "source": "d5a2ee34e656df6b078266f5447dfb3f13b86f921bbe01b6d82b109cb2aa93d9",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-organic-05",
+        "size": "medium",
+        "morphology": "organic",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": -100,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0133",
+        "RD-0141",
+        "RD-0142",
+        "RD-0157",
+        "RD-0158",
+        "RD-0162",
+        "RD-0176",
+        "RD-0178"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 542429,
+        "expansions": 0,
+        "remainingWork": 7457571,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1294.5054490000002
+    },
+    {
+      "caseId": "h:planned-06",
+      "arm": "hybrid",
+      "source": "3b274ade40b8d4c099f24fbb2a582a62349b7bcb68a6f40bc2105edd1e1f8d93",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-06",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "group": "eight-loop",
+      "offset": {
+        "x": -50,
+        "y": -100
+      },
+      "selectedRoadIds": [
+        "RD-0137",
+        "RD-0138",
+        "RD-0139",
+        "RD-0142",
+        "RD-0160",
+        "RD-0161",
+        "RD-0162",
+        "RD-0193"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1254433,
+        "expansions": 0,
+        "remainingWork": 6745567,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 3335.48273
+    },
+    {
+      "caseId": "h:planned-07",
+      "arm": "hybrid",
+      "source": "97b9b6c4040722f173b65c8c38bbcf59fd54910c3ac1ed0b1d10cedda7a16a6a",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-07",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "group": "quad",
+      "offset": {
+        "x": -50,
+        "y": -50
+      },
+      "selectedRoadIds": [
+        "RD-0114",
+        "RD-0115",
+        "RD-0117",
+        "RD-0131"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 256220,
+        "expansions": 0,
+        "remainingWork": 7743780,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 664.3756929999995
+    },
+    {
+      "caseId": "h:planned-08",
+      "arm": "hybrid",
+      "source": "abdc69317e7e244ffa203523da11e616fcc82e28d0f413ed2ee152169dbf68d9",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-08",
+        "size": "medium",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": -50,
+        "y": 0
+      },
+      "selectedRoadIds": [
+        "RD-0128",
+        "RD-0130",
+        "RD-0132",
+        "RD-0134",
+        "RD-0136",
+        "RD-0138",
+        "RD-0140",
+        "RD-0142"
+      ],
+      "authority": "none",
+      "category": "baseline-valid",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": true,
+      "baselineGeometryValid": true,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "baseline-preferred",
+      "attempts": 0,
+      "searchStats": {
+        "work": 595246,
+        "expansions": 0,
+        "remainingWork": 7404754,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1291.4024140000001,
+      "audit": {
+        "version": 1,
+        "caseId": "h:planned-08",
+        "status": "geometry-verified",
+        "reason": null,
+        "changedRoadIds": [
+          "RD-0115",
+          "RD-0116",
+          "RD-0117",
+          "RD-0118",
+          "RD-0119",
+          "RD-0120",
+          "RD-0121",
+          "RD-0122",
+          "RD-0123",
+          "RD-0126",
+          "RD-0128",
+          "RD-0129",
+          "RD-0130",
+          "RD-0131",
+          "RD-0132",
+          "RD-0133",
+          "RD-0134",
+          "RD-0135",
+          "RD-0136",
+          "RD-0137",
+          "RD-0138",
+          "RD-0139",
+          "RD-0140",
+          "RD-0141",
+          "RD-0142",
+          "RD-0143",
+          "RD-0144",
+          "RD-0145"
+        ],
+        "finalChecked": 84,
+        "sweptUnresolved": 0,
+        "stats": {
+          "work": 661868,
+          "expansions": 0,
+          "remainingWork": 7338132,
+          "remainingExpansions": 32768
+        }
+      },
+      "auditMs": 1283.9496249999993,
+      "witness": null
+    },
+    {
+      "caseId": "h:planned-09",
+      "arm": "hybrid",
+      "source": "3296fa0005cc71bc953766660f22985c8d77c81bb3417bb913103ccf2abde565",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-09",
+        "size": "large",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "group": "five-chain",
+      "offset": {
+        "x": -50,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0135",
+        "RD-0138",
+        "RD-0151",
+        "RD-0152",
+        "RD-0153"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1242196,
+        "expansions": 0,
+        "remainingWork": 6757804,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 3094.862282
+    },
+    {
+      "caseId": "h:planned-10",
+      "arm": "hybrid",
+      "source": "93585e77fb20837d026af1e3ad2ece3d78eec6292e0ea781626f68710fa44d95",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-planned-10",
+        "size": "small",
+        "morphology": "planned",
+        "irregularProperties": false
+      },
+      "group": "five-branch",
+      "offset": {
+        "x": -50,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0111",
+        "RD-0112",
+        "RD-0121",
+        "RD-0122",
+        "RD-0123"
+      ],
+      "authority": "none",
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0114",
+        "RD-0122",
+        "RD-0123",
+        "RD-0125",
+        "RD-0137",
+        "RD-0138",
+        "RD-0139",
+        "RD-0140",
+        "RD-0141",
+        "RD-0154",
+        "RD-0227"
+      ],
+      "termination": "candidate-limit",
+      "attempts": 256,
+      "searchStats": {
+        "work": 2288198,
+        "expansions": 381,
+        "remainingWork": 5711802,
+        "remainingExpansions": 32387
+      },
+      "searchMs": 1709.908617000001
+    },
+    {
+      "caseId": "h:radial-11",
+      "arm": "hybrid",
+      "source": "c9fb77ee2ba57ac88a8484cf2022cc16c9c8b1b33d0928dbbafbd75104e5cf00",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-11",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": -100
+      },
+      "selectedRoadIds": [
+        "RD-0114",
+        "RD-0115",
+        "RD-0116",
+        "RD-0117",
+        "RD-0118",
+        "RD-0454",
+        "RD-0455",
+        "RD-0456"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 528214,
+        "expansions": 0,
+        "remainingWork": 7471786,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 1869.564696
+    },
+    {
+      "caseId": "h:radial-12",
+      "arm": "hybrid",
+      "source": "ab67ca25f87420cf23abde7aa3a2a68c673bcf9866a6c4d504ecac79a4249c83",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-12",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "group": "eight-loop",
+      "offset": {
+        "x": 0,
+        "y": -50
+      },
+      "selectedRoadIds": [
+        "RD-0126",
+        "RD-0137",
+        "RD-0296",
+        "RD-0297",
+        "RD-0298",
+        "RD-0362",
+        "RD-0363",
+        "RD-0364"
+      ],
+      "authority": "none",
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0125",
+        "RD-0126",
+        "RD-0127",
+        "RD-0136",
+        "RD-0137",
+        "RD-0277",
+        "RD-0278",
+        "RD-0286",
+        "RD-0287",
+        "RD-0288",
+        "RD-0296",
+        "RD-0298",
+        "RD-0299",
+        "RD-0355",
+        "RD-0357",
+        "RD-0361",
+        "RD-0362",
+        "RD-0424",
+        "RD-0425",
+        "RD-0427"
+      ],
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1117607,
+        "expansions": 456,
+        "remainingWork": 6882393,
+        "remainingExpansions": 32312
+      },
+      "searchMs": 2879.3028939999995
+    },
+    {
+      "caseId": "h:radial-13",
+      "arm": "hybrid",
+      "source": "44e8975c122e13c467c96cb33da4e21d065206a1bf6207a74d69929f79fc5151",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-13",
+        "size": "small",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": 75,
+        "y": -25
+      },
+      "selectedRoadIds": [
+        "RD-0098",
+        "RD-0099",
+        "RD-0100",
+        "RD-0147",
+        "RD-0148",
+        "RD-0271",
+        "RD-0272",
+        "RD-0273"
+      ],
+      "authority": "none",
+      "category": "preflight-refused",
+      "eligibilityStatus": "preflight-refused",
+      "baselineValid": null,
+      "baselineGeometryValid": null,
+      "baselineIssues": [],
+      "baselineBlockers": [],
+      "termination": "preflight",
+      "attempts": 0,
+      "searchStats": {
+        "work": 229180,
+        "expansions": 0,
+        "remainingWork": 7770820,
+        "remainingExpansions": 32768
+      },
+      "searchMs": 519.6269609999999
+    },
+    {
+      "caseId": "h:radial-14",
+      "arm": "hybrid",
+      "source": "4521ee3533840ebe8c5f520a60ca957aa42b701a71e9a8a02838496a9df6cb0f",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-14",
+        "size": "medium",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "group": "eight-chain",
+      "offset": {
+        "x": 0,
+        "y": 50
+      },
+      "selectedRoadIds": [
+        "RD-0114",
+        "RD-0115",
+        "RD-0116",
+        "RD-0120",
+        "RD-0121",
+        "RD-0352",
+        "RD-0353",
+        "RD-0354"
+      ],
+      "authority": "none",
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0113",
+        "RD-0114",
+        "RD-0115",
+        "RD-0118",
+        "RD-0119",
+        "RD-0120",
+        "RD-0121",
+        "RD-0208",
+        "RD-0212",
+        "RD-0255",
+        "RD-0258",
+        "RD-0260",
+        "RD-0305",
+        "RD-0308",
+        "RD-0356"
+      ],
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 0,
+      "searchStats": {
+        "work": 749703,
+        "expansions": 2554,
+        "remainingWork": 7250297,
+        "remainingExpansions": 30214
+      },
+      "searchMs": 1370.7023149999995
+    },
+    {
+      "caseId": "h:radial-15",
+      "arm": "hybrid",
+      "source": "5b98bd1fe26380ea851ce6f6dc733729bc25d50f01f918f1a86ebc1586329c96",
+      "options": {
+        "seed": "ares-holdout-v1-95a62cd3-radial-15",
+        "size": "large",
+        "morphology": "radial",
+        "irregularProperties": false
+      },
+      "group": "five-chain",
+      "offset": {
+        "x": 0,
+        "y": 100
+      },
+      "selectedRoadIds": [
+        "RD-0122",
+        "RD-0123",
+        "RD-0124",
+        "RD-0125",
+        "RD-0126"
+      ],
+      "authority": "none",
+      "category": "search-refused",
+      "eligibilityStatus": "research-eligible",
+      "baselineValid": false,
+      "baselineGeometryValid": false,
+      "baselineIssues": [
+        "unnormalized-crossing"
+      ],
+      "baselineBlockers": [
+        "RD-0121",
+        "RD-0122",
+        "RD-0123",
+        "RD-0124",
+        "RD-0125",
+        "RD-0126",
+        "RD-0131",
+        "RD-0132",
+        "RD-0133",
+        "RD-0134",
+        "RD-0135",
+        "RD-0140",
+        "RD-0141",
+        "RD-0142",
+        "RD-0148",
+        "RD-0149",
+        "RD-0291",
+        "RD-0292",
+        "RD-0300",
+        "RD-0356",
+        "RD-0357",
+        "RD-0358",
+        "RD-0364",
+        "RD-0422",
+        "RD-0423",
+        "RD-0424",
+        "RD-0427",
+        "RD-0488",
+        "RD-0489",
+        "RD-0490",
+        "RD-0492",
+        "RD-0554",
+        "RD-0556",
+        "RD-0557",
+        "RD-0620",
+        "RD-0622",
+        "RD-0623",
+        "RD-0686"
+      ],
+      "termination": "hybrid-stream-exhausted",
+      "attempts": 0,
+      "searchStats": {
+        "work": 1305398,
+        "expansions": 2807,
+        "remainingWork": 6694602,
+        "remainingExpansions": 29961
+      },
+      "searchMs": 2425.298466
+    }
+  ]
+}

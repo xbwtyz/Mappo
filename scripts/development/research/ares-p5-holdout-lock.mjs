@@ -28,3 +28,5 @@ export function holdoutRtreLock(caseId){
   return riFreeze({id:caseId,source:r.source,limits:G_MANIFEST.search.root,holdout:true,
     slot:{city:r.id,group:r.group,offset:r.offset},selectedRoadIds:r.selectedRoadIds});
 }
+
+export const HOLDOUT_SPLIT_PERMISSIONS=Object.freeze({mode:'restructure',intersection:true,split:true,merge:false,overlap:false});
